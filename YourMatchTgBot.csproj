@@ -5,12 +5,13 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>dotnet-your_match_bot_tg-921FBB10-5901-4940-ABFE-54904F90C0B6</UserSecretsId>
-        <RootNamespace>your_match_bot_tg</RootNamespace>
+        <RootNamespace>YourMatchTgBot</RootNamespace>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+        <PackageReference Include="Stateless" Version="5.15.0" />
         <PackageReference Include="Telegram.Bot" Version="20.0.0-alpha.1" />
     </ItemGroup>
 </Project>

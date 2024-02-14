@@ -1,8 +1,12 @@
+using System.Globalization;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using YourMatchTgBot.Services;
+using YourMatchTgBot.StateMachine;
+using YourMatchTgBot.StateMachine.StateHandlers;
+using YourMatchTgBot.StateMachine.StateHandlers.Register;
 using User = YourMatchTgBot.Models.User;
 
 namespace YourMatchTgBot;
@@ -16,18 +20,29 @@ public class Worker : BackgroundService
     private readonly TelegramBotClient _telegramBotClient =
         new TelegramBotClient("6840671790:AAFa-HhMJZXiNL7KLqY1enC4A87rUOj_w-g");
 
-    public Worker(ILogger<Worker> logger, UserService userService, InterestService interestService)
+    private readonly StateMachine.StateMachine _stateMachine;
+
+    private User _newUser = null;
+    private string _lastBotRequest = null;
+    private Update _lastUpdate = null;
+
+    public Worker(ILogger<Worker> logger, UserService userService, InterestService interestService, StateMachine.StateMachine stateMachine)
     {
         _logger = logger;
         _userService = userService;
         _interestService = interestService;
+        _stateMachine = stateMachine;
+
+        /*
+        _stateMachine.RegisterHandler(State.Start, new StartStateHandler(_userService));
+        _stateMachine.RegisterHandler(State.Register_WaitingForName, new WaitingForNameHandler(logger));
+        _stateMachine.RegisterHandler(State.Register_WaitingForAge, new WaitingForAgeHandler(logger));
+        */
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var me = await _telegramBotClient.GetMeAsync(cancellationToken: stoppingToken);
-
-        _telegramBotClient.StartReceiving(HandleUpdate, HandleError, cancellationToken: stoppingToken);
+        _telegramBotClient.StartReceiving(_stateMachine.ActivateCurrentState, HandleError, cancellationToken: stoppingToken);
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -38,39 +53,13 @@ public class Worker : BackgroundService
 
             await Task.Delay(1000, stoppingToken);
         }
+
+        await _telegramBotClient.CloseAsync(cancellationToken: stoppingToken);
     }
 
     private async Task HandleUpdate(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
-        if (update.Message is not { } message)
-            return;
-        // Only process text messages
-        if (message.Text is not { } messageText)
-            return;
-
-        var chatId = message.Chat.Id;
-
-        var user = _userService.GetUserById(chatId);
-        if (user == null)
-        {
-            // Заполнение анкеты. По сути команда `/start`
-
-            user = new User
-            {
-                Id = chatId,
-                Name = message.From.FirstName,
-                Age = 23,
-                City = "Белгород",
-                Description = (await botClient.GetChatAsync(chatId, cancellationToken: cancellationToken)).Bio ?? "",
-                ZodiacSign = "Дева",
-                Height = 175,
-                Education = "Высшее",
-                Interests = _interestService.GetInterestsByIds(5, 6, 7)
-            };
-
-            // После заполнения выбор действий: просмотр анкет или настройка анкеты и поиска.
-        }
-
+        /*
         var photos = await botClient.GetUserProfilePhotosAsync(chatId, cancellationToken: cancellationToken);
 
         var album = photos.Photos
@@ -94,11 +83,12 @@ public class Worker : BackgroundService
             cancellationToken: cancellationToken);
 
         var messages = await botClient.SendMediaGroupAsync(chatId, album, cancellationToken: cancellationToken);
+        */
     }
 
     private async Task HandleError(ITelegramBotClient botClient, Exception exception,
         CancellationToken cancellationToken)
     {
-
+        
     }
 }
