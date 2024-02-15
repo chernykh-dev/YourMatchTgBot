@@ -29,7 +29,7 @@ public class WaitingForNameHandler : StateHandlerWithCancel
             cancellationToken: cancellationToken);
     }
 
-    public async Task ResponseFromUser(ITelegramBotClient botClient, Update update, StateMachine stateMachine,
+    public override async Task ResponseFromUser(ITelegramBotClient botClient, Update update, StateMachine stateMachine,
         CancellationToken cancellationToken)
     {
         var userName = update.Message.Text;

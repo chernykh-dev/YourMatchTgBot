@@ -24,9 +24,7 @@ public class StateMachine
             {
                 var ctorParameters = type.GetConstructors()[0].GetParameters();
                 
-                _stateHandlers.Add(
-                    handlerAttribute.State, 
-                    dependencyReflectorFactory.GetReflectedType<IStateHandler>(type, null));
+                RegisterHandler(handlerAttribute.State, dependencyReflectorFactory.GetReflectedType<IStateHandler>(type, null));
             }
         }
     }
@@ -40,9 +38,16 @@ public class StateMachine
     {
         if (_stateHandlers.TryGetValue(State, out var stateHandler))
         {
-            await stateHandler.RequestToUser(botClient, update, this, cancellationToken);
+            // await stateHandler.RequestToUser(botClient, update, this, cancellationToken);
             
             await stateHandler.ResponseFromUser(botClient, update, this, cancellationToken);
+            
+            // State must be updated in response handler. ^^^
+        }
+        
+        if (_stateHandlers.TryGetValue(State, out stateHandler))
+        {
+            await stateHandler.RequestToUser(botClient, update, this, cancellationToken);
         }
     }
     

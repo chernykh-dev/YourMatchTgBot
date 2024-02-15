@@ -18,7 +18,7 @@ public class WaitingForGender : IStateHandler
     public async Task RequestToUser(ITelegramBotClient botClient, Update update, StateMachine stateMachine,
         CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        
     }
 
     public async Task ResponseFromUser(ITelegramBotClient botClient, Update update, StateMachine stateMachine,
