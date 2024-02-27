@@ -1,11 +1,14 @@
+using Microsoft.Extensions.Localization;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
+using YourMatchTgBot.Services;
+using User = YourMatchTgBot.Models.User;
 
 namespace YourMatchTgBot.StateMachineSystem.StateHandlers.Register;
 
 [StateHandler(BotState.Register_WaitingForName)]
-public class WaitingForNameHandler : StateHandlerWithCancel
+public class WaitingForNameHandler : StateHandlerWithKeyboardMarkup
 {
     private readonly ILogger<WaitingForNameHandler> _logger;
     private readonly IStringLocalizer<Program> _localizer;
@@ -21,12 +24,11 @@ public class WaitingForNameHandler : StateHandlerWithCancel
     {
         var expectedName = update.Message.From.FirstName;
 
-        var replyKeyboardMarkup = ReplyKeyboardMarkup.Keyboard.ToList();
-        replyKeyboardMarkup.Insert(0, new[] { new KeyboardButton(expectedName) });
-        ReplyKeyboardMarkup.Keyboard = replyKeyboardMarkup;
+        var replyKeyboardMarkup = GetReplyKeyboardWithCancel(new[] { new[] { expectedName } }, _localizer);
 
         // Можно вынести отправку text message.
-        await botClient.SendTextMessageAsync(update.Message.Chat.Id, "Name:", replyMarkup: ReplyKeyboardMarkup,
+        await botClient.SendTextMessageAsync(update.Message.Chat.Id, _localizer["WaitingName"],
+            replyMarkup: replyKeyboardMarkup,
             cancellationToken: cancellationToken);
     }
 
