@@ -1,8 +1,12 @@
-﻿namespace YourMatchTgBot.Models;
+﻿using YourMatchTgBot.StateMachineSystem;
+
+namespace YourMatchTgBot.Models;
 
 public class User
 {
     public long Id { get; set; }
+    
+    public BotState State { get; set; }
 
     public string Name { get; set; }
 

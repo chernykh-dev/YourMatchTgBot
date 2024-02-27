@@ -17,7 +17,7 @@ public class UserService
         {
             new()
             {
-                Id = 472106852L + 1,
+                Id = 472106852L + 10,
                 Name = "Артём",
                 Age = 23,
                 City = "Белгород",
@@ -32,5 +32,12 @@ public class UserService
     public User? GetUserById(long id)
     {
         return _users.FirstOrDefault(u => u.Id == id);
+    }
+
+    public User AddUser(User user)
+    {
+        _users.Add(user);
+
+        return user;
     }
 }
