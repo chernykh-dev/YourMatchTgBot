@@ -1,7 +1,7 @@
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace YourMatchTgBot.StateMachine;
+namespace YourMatchTgBot.StateMachineSystem;
 
 public interface IStateHandler
 {

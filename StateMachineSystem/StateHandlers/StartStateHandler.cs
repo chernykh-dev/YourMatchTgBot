@@ -3,27 +3,29 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using YourMatchTgBot.Services;
 
-namespace YourMatchTgBot.StateMachine.StateHandlers;
+namespace YourMatchTgBot.StateMachineSystem.StateHandlers;
 
-[StateHandler(State.Start)]
+[StateHandler(BotState.Start)]
 public class StartStateHandler : IStateHandler
 {
     private readonly UserService _userService;
     private ILogger<StartStateHandler> _logger;
+    // private StateMachine _stateMachine;
 
-    public StartStateHandler(UserService userService, ILogger<StartStateHandler> logger)
+    public StartStateHandler(UserService userService, ILogger<StartStateHandler> logger/*, StateMachine stateMachine*/)
     {
         _userService = userService;
         _logger = logger;
+        // _stateMachine = stateMachine;
     }
 
     public async Task RequestToUser(ITelegramBotClient botClient, Update update, StateMachine stateMachine,
         CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Request");
+        
     }
 
-    public async Task ResponseFromUser(ITelegramBotClient botClient, Update update, YourMatchTgBot.StateMachine.StateMachine stateMachine,
+    public async Task ResponseFromUser(ITelegramBotClient botClient, Update update, StateMachine stateMachine,
         CancellationToken cancellationToken)
     {
         if (update.Message is not { } message)
@@ -36,11 +38,13 @@ public class StartStateHandler : IStateHandler
             return;
         
         var chatId = message.Chat.Id;
+        
+        _logger.LogInformation("User {{id:{chatId}}} started", chatId);
 
         var user = _userService.GetUserById(chatId);
         if (user == null)
         {
-            stateMachine.SetState(State.Register_WaitingForName);
+            stateMachine.SetState(BotState.Register_WaitingForName);
             return;
 
             /*
@@ -60,7 +64,6 @@ public class StartStateHandler : IStateHandler
             // После заполнения выбор действий: просмотр анкет или настройка анкеты и поиска.
         }
 
-        stateMachine.SetState(State.Menu);
-        return;
+        stateMachine.SetState(BotState.Menu);
     }
 }

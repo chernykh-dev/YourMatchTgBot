@@ -3,9 +3,9 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace YourMatchTgBot.StateMachine.StateHandlers.Register;
+namespace YourMatchTgBot.StateMachineSystem.StateHandlers.Register;
 
-[StateHandler(State.Register_WaitingForAge)]
+[StateHandler(BotState.Register_WaitingForAge)]
 public class WaitingForAgeHandler : IStateHandler
 {
     private readonly ILogger<WaitingForAgeHandler> _logger;
@@ -34,7 +34,6 @@ public class WaitingForAgeHandler : IStateHandler
         }
         else if (!uint.TryParse(userInput, out userAge))
         {
-            await RequestToUser(botClient, update, stateMachine, cancellationToken);
             return;
         }
         
@@ -46,6 +45,6 @@ public class WaitingForAgeHandler : IStateHandler
         await botClient.SendTextMessageAsync(update.Message.Chat.Id, "Gender:", replyMarkup: reply,
             cancellationToken: cancellationToken);
         */
-        stateMachine.SetState(State.Register_WaitingForGender);
+        stateMachine.SetState(BotState.Register_WaitingForGender);
     }
 }

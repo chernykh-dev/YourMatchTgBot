@@ -1,7 +1,7 @@
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace YourMatchTgBot.StateMachine.StateHandlers;
+namespace YourMatchTgBot.StateMachineSystem.StateHandlers;
 
 public abstract class StateHandlerWithCancel : StateHandlerWithReplyKeyboard
 {

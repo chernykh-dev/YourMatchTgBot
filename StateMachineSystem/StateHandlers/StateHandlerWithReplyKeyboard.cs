@@ -2,7 +2,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace YourMatchTgBot.StateMachine.StateHandlers;
+namespace YourMatchTgBot.StateMachineSystem.StateHandlers;
 
 public abstract class StateHandlerWithReplyKeyboard : IStateHandler
 {

@@ -2,9 +2,9 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace YourMatchTgBot.StateMachine.StateHandlers.Register;
+namespace YourMatchTgBot.StateMachineSystem.StateHandlers.Register;
 
-[StateHandler(State.Register_WaitingForName)]
+[StateHandler(BotState.Register_WaitingForName)]
 public class WaitingForNameHandler : StateHandlerWithCancel
 {
     private readonly ILogger<WaitingForNameHandler> _logger;
@@ -21,7 +21,7 @@ public class WaitingForNameHandler : StateHandlerWithCancel
         var expectedName = update.Message.From.FirstName;
 
         var replyKeyboardMarkup = ReplyKeyboardMarkup.Keyboard.ToList();
-        replyKeyboardMarkup.Insert(0, new [] { new KeyboardButton(expectedName) });
+        replyKeyboardMarkup.Insert(0, new[] { new KeyboardButton(expectedName) });
         ReplyKeyboardMarkup.Keyboard = replyKeyboardMarkup;
 
         // Можно вынести отправку text message.
@@ -36,6 +36,6 @@ public class WaitingForNameHandler : StateHandlerWithCancel
         
         _logger.LogInformation(userName);
         
-        stateMachine.SetState(State.Register_WaitingForAge);
+        stateMachine.SetState(BotState.Register_WaitingForAge);
     }
 }

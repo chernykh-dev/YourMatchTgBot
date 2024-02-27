@@ -3,16 +3,16 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using YourMatchTgBot.ReflectionExtensions;
 
-namespace YourMatchTgBot.StateMachine;
+namespace YourMatchTgBot.StateMachineSystem;
 
 public class StateMachine
 {
-    private readonly State _initialState;
-    private readonly Dictionary<State, IStateHandler> _stateHandlers = new();
+    private readonly BotState _initialState;
+    private readonly Dictionary<BotState, IStateHandler> _stateHandlers = new();
 
-    public State State { get; private set; }
+    public BotState State { get; private set; }
 
-    public StateMachine(State initialState, IDependencyReflectorFactory dependencyReflectorFactory)
+    public StateMachine(BotState initialState, IDependencyReflectorFactory dependencyReflectorFactory)
     {
         _initialState = initialState;
         State = initialState;
@@ -20,22 +20,28 @@ public class StateMachine
         foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
         {
             var handlerAttribute = type.GetCustomAttribute<StateHandlerAttribute>();
-            if (handlerAttribute != null)
-            {
-                var ctorParameters = type.GetConstructors()[0].GetParameters();
-                
-                RegisterHandler(handlerAttribute.State, dependencyReflectorFactory.GetReflectedType<IStateHandler>(type, null));
-            }
+            if (handlerAttribute == null)
+                continue;
+            
+            // TODO: Delete.
+            var ctorParameters = type.GetConstructors()[0].GetParameters();
+
+            RegisterHandler(handlerAttribute.State,
+                dependencyReflectorFactory.GetReflectedType<IStateHandler>(type, null));
         }
     }
 
-    public void RegisterHandler(State state, IStateHandler handler)
+    public void RegisterHandler(BotState state, IStateHandler handler)
     {
         _stateHandlers[state] = handler;
     }
 
     public async Task ActivateCurrentState(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
+        // Фильтры каждого сообщения от пользователя.
+        if (update.Message is not { } message || message.Chat.Id != 472106852L)
+            return;
+        
         if (_stateHandlers.TryGetValue(State, out var stateHandler))
         {
             // await stateHandler.RequestToUser(botClient, update, this, cancellationToken);
@@ -51,7 +57,7 @@ public class StateMachine
         }
     }
     
-    public void SetState(State state)
+    public void SetState(BotState state)
     {
         State = state;
     }
@@ -62,7 +68,7 @@ public class StateMachine
     }
 }
 
-public enum State
+public enum BotState
 {
     Start = 0,
     
