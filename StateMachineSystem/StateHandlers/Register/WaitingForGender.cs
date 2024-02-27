@@ -9,7 +9,7 @@ using User = YourMatchTgBot.Models.User;
 namespace YourMatchTgBot.StateMachineSystem.StateHandlers.Register;
 
 [StateHandler(BotState.Register_WaitingForGender)]
-public class WaitingForGender : IStateHandler
+public class WaitingForGender : StateHandlerWithKeyboardMarkup
 {
     private readonly ILogger<WaitingForGender> _logger;
     private readonly IStringLocalizer<Program> _localizer;
@@ -20,21 +20,21 @@ public class WaitingForGender : IStateHandler
         _localizer = localizer;
     }
 
-    public async Task RequestToUser(ITelegramBotClient botClient, Update update, User user,
+    public override async Task RequestToUser(ITelegramBotClient botClient, Update update, User user,
         CancellationToken cancellationToken)
     {
-        var reply = new ReplyKeyboardMarkup(new[] { new KeyboardButton("Man"), new KeyboardButton("Women") });
-        reply.ResizeKeyboard = true;
-        await botClient.SendTextMessageAsync(update.Message.Chat.Id, "Gender:", replyMarkup: reply,
+        var replyKeyboardMarkup = GetReplyKeyboard(new[] { new string[] { _localizer["Man"], _localizer["Women"] } });
+
+        await botClient.SendTextMessageAsync(update.Message.Chat.Id, _localizer["WaitingGender"], replyMarkup: replyKeyboardMarkup,
             cancellationToken: cancellationToken);
     }
 
-    public async Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user,
+    public override async Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user,
         CancellationToken cancellationToken)
     {
         var userInput = update.Message.Text;
 
-        if (userInput is not "Man" and "Women")
+        if (userInput != _localizer["Man"] && userInput != _localizer["Women"])
         {
             return;
         }
