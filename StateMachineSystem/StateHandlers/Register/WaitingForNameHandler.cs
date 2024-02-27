@@ -15,7 +15,7 @@ public class WaitingForNameHandler : StateHandlerWithCancel
         _logger = logger;
     }
 
-    public override async Task RequestToUser(ITelegramBotClient botClient, Update update, StateMachine stateMachine,
+    public override async Task RequestToUser(ITelegramBotClient botClient, Update update, User user,
         CancellationToken cancellationToken)
     {
         var expectedName = update.Message.From.FirstName;
@@ -29,13 +29,13 @@ public class WaitingForNameHandler : StateHandlerWithCancel
             cancellationToken: cancellationToken);
     }
 
-    public override async Task ResponseFromUser(ITelegramBotClient botClient, Update update, StateMachine stateMachine,
+    public override async Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user,
         CancellationToken cancellationToken)
     {
         var userName = update.Message.Text;
         
         _logger.LogInformation(userName);
-        
-        stateMachine.SetState(BotState.Register_WaitingForAge);
+
+        user.State = BotState.Register_WaitingForAge;
     }
 }

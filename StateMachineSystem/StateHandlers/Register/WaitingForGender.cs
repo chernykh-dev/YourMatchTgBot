@@ -15,7 +15,7 @@ public class WaitingForGender : IStateHandler
         _logger = logger;
     }
 
-    public async Task RequestToUser(ITelegramBotClient botClient, Update update, StateMachine stateMachine,
+    public async Task RequestToUser(ITelegramBotClient botClient, Update update, User user,
         CancellationToken cancellationToken)
     {
         var reply = new ReplyKeyboardMarkup(new[] { new KeyboardButton("Man"), new KeyboardButton("Women") });
@@ -24,18 +24,18 @@ public class WaitingForGender : IStateHandler
             cancellationToken: cancellationToken);
     }
 
-    public async Task ResponseFromUser(ITelegramBotClient botClient, Update update, StateMachine stateMachine,
+    public async Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user,
         CancellationToken cancellationToken)
     {
         var userInput = update.Message.Text;
 
-        if (userInput == "Man" || userInput == "Women")
+        if (userInput is not "Man" and "Women")
         {
-            // Interests.
-            stateMachine.SetState(BotState.Register_WaitingForInterests);
             return;
         }
         
-        return;
+        // Interests.
+
+        user.State = BotState.Register_WaitingForInterests;
     }
 }

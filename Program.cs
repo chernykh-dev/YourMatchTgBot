@@ -12,11 +12,9 @@ public class Program
     {
         var builder = Host.CreateApplicationBuilder(args);
         builder.Services.AddReflectionServices();
-        builder.Services.AddSingleton<ITelegramBotClient>(new TelegramBotClient("6840671790:AAFa-HhMJZXiNL7KLqY1enC4A87rUOj_w-g"));
-        builder.Services
-            .AddSingleton<StateMachine>(
-                provider => new StateMachine(
-                    BotState.Start, provider.GetService<IDependencyReflectorFactory>()));
+        builder.Services.AddSingleton<ITelegramBotClient>(
+            new TelegramBotClient("6840671790:AAFa-HhMJZXiNL7KLqY1enC4A87rUOj_w-g"));
+        builder.Services.AddSingleton<StateMachine>();
         builder.Services.AddSingleton<InterestService>();
         builder.Services.AddSingleton<UserService>();
         builder.Services.AddHostedService<Worker>();
