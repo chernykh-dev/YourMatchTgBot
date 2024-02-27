@@ -19,7 +19,8 @@ public class User
     public string Education { get; set; }
 
     public List<Interest> Interests { get; set; }
-
+    
+    public string? LanguageCode { get; set; }
 
 
     public string GetTextProfile()

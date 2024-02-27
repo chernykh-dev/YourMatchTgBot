@@ -1,7 +1,10 @@
 using System.Globalization;
+using Microsoft.Extensions.Localization;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
+using YourMatchTgBot.Services;
+using User = YourMatchTgBot.Models.User;
 
 namespace YourMatchTgBot.StateMachineSystem.StateHandlers.Register;
 
@@ -9,10 +12,12 @@ namespace YourMatchTgBot.StateMachineSystem.StateHandlers.Register;
 public class WaitingForGender : IStateHandler
 {
     private readonly ILogger<WaitingForGender> _logger;
+    private readonly IStringLocalizer<Program> _localizer;
 
-    public WaitingForGender(ILogger<WaitingForGender> logger)
+    public WaitingForGender(ILogger<WaitingForGender> logger, IStringLocalizer<Program> localizer)
     {
         _logger = logger;
+        _localizer = localizer;
     }
 
     public async Task RequestToUser(ITelegramBotClient botClient, Update update, StateMachine stateMachine,

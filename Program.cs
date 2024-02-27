@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Telegram.Bot;
 using YourMatchTgBot.ReflectionExtensions;
@@ -11,6 +12,12 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = Host.CreateApplicationBuilder(args);
+
+        builder.Services.AddLocalization(opt =>
+        {
+            opt.ResourcesPath = "Resources";
+        });
+        
         builder.Services.AddReflectionServices();
         builder.Services.AddSingleton<ITelegramBotClient>(new TelegramBotClient("6840671790:AAFa-HhMJZXiNL7KLqY1enC4A87rUOj_w-g"));
         builder.Services
@@ -31,5 +38,10 @@ public class Program
 
         var host = builder.Build();
         host.Run();
+    }
+
+    public static void ChangeCultureInfo(string languageCode)
+    {
+        CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(languageCode);
     }
 }

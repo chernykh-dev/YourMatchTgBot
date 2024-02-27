@@ -8,11 +8,12 @@ namespace YourMatchTgBot.StateMachineSystem.StateHandlers.Register;
 public class WaitingForNameHandler : StateHandlerWithCancel
 {
     private readonly ILogger<WaitingForNameHandler> _logger;
+    private readonly IStringLocalizer<Program> _localizer;
 
-    public WaitingForNameHandler(ILogger<WaitingForNameHandler> logger) 
-        : base(new List<IEnumerable<string>>())
+    public WaitingForNameHandler(ILogger<WaitingForNameHandler> logger, IStringLocalizer<Program> localizer)
     {
         _logger = logger;
+        _localizer = localizer;
     }
 
     public override async Task RequestToUser(ITelegramBotClient botClient, Update update, StateMachine stateMachine,

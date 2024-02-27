@@ -41,8 +41,22 @@ public class StateMachine
         // Фильтры каждого сообщения от пользователя.
         if (update.Message is not { } message || message.Chat.Id != 472106852L)
             return;
-        
-        if (_stateHandlers.TryGetValue(State, out var stateHandler))
+
+        var languageCode = user.LanguageCode;
+
+        if (languageCode == null)
+        {
+            languageCode = update.Message.From.LanguageCode;
+            
+            if (user.Id == 472106852L)
+                languageCode = "ru";
+            
+            user.LanguageCode = languageCode;
+        }
+
+        Program.ChangeCultureInfo(languageCode);
+
+        if (_stateHandlers.TryGetValue(user.State, out var stateHandler))
         {
             // await stateHandler.RequestToUser(botClient, update, this, cancellationToken);
             
