@@ -45,4 +45,70 @@
     <data name="WaitingGender" xml:space="preserve">
         <value>Пол:</value>
     </data>
+    <data name="WaitingInterests" xml:space="preserve">
+        <value>Интересы ({0} из {1}):</value>
+    </data>
+    <data name="🛍" xml:space="preserve">
+        <value>шоппинг</value>
+    </data>
+    <data name="🚶" xml:space="preserve">
+        <value>прогулки</value>
+    </data>
+    <data name="🚙" xml:space="preserve">
+        <value>машины</value>
+    </data>
+    <data name="💃" xml:space="preserve">
+        <value>клубы</value>
+    </data>
+    <data name="🏅" xml:space="preserve">
+        <value>спорт</value>
+    </data>
+    <data name="🎲" xml:space="preserve">
+        <value>игры</value>
+    </data>
+    <data name="🎧" xml:space="preserve">
+        <value>музыка</value>
+    </data>
+    <data name="🎞" xml:space="preserve">
+        <value>фильмы</value>
+    </data>
+    <data name="🍳" xml:space="preserve">
+        <value>кулинария</value>
+    </data>
+    <data name="🍲" xml:space="preserve">
+        <value>еда</value>
+    </data>
+    <data name="💻" xml:space="preserve">
+        <value>IT</value>
+    </data>
+    <data name="🏔" xml:space="preserve">
+        <value>путешествия</value>
+    </data>
+    <data name="📚" xml:space="preserve">
+        <value>книги</value>
+    </data>
+    <data name="WaitingHeight" xml:space="preserve">
+        <value>Рост:</value>
+    </data>
+    <data name="📍" xml:space="preserve">
+        <value>Отправить локацию</value>
+    </data>
+    <data name="WaitingLocation" xml:space="preserve">
+        <value>Город или локация:</value>
+    </data>
+    <data name="GetPhotosFromProfile" xml:space="preserve">
+        <value>Использовать фотографии профиля</value>
+    </data>
+    <data name="WaitingPhotos" xml:space="preserve">
+        <value>Загрузи до {0} фотографий ({1} из {0}):</value>
+    </data>
+    <data name="Continue" xml:space="preserve">
+        <value>Продолжить</value>
+    </data>
+    <data name="GetProfileDescription" xml:space="preserve">
+        <value>Использовать описание профиля</value>
+    </data>
+    <data name="WaitingDescription" xml:space="preserve">
+        <value>Описание о себе:</value>
+    </data>
 </root>

@@ -9,12 +9,12 @@ using User = YourMatchTgBot.Models.User;
 namespace YourMatchTgBot.StateMachineSystem.StateHandlers.Register;
 
 [StateHandler(BotState.Register_WaitingForGender)]
-public class WaitingForGender : StateHandlerWithKeyboardMarkup
+public class WaitingForGenderHandler : StateHandlerWithKeyboardMarkup
 {
-    private readonly ILogger<WaitingForGender> _logger;
+    private readonly ILogger<WaitingForGenderHandler> _logger;
     private readonly IStringLocalizer<Program> _localizer;
 
-    public WaitingForGender(ILogger<WaitingForGender> logger, IStringLocalizer<Program> localizer)
+    public WaitingForGenderHandler(ILogger<WaitingForGenderHandler> logger, IStringLocalizer<Program> localizer)
     {
         _logger = logger;
         _localizer = localizer;

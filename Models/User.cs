@@ -22,7 +22,9 @@ public class User
 
     public string Education { get; set; }
 
-    public List<Interest> Interests { get; set; }
+    public List<Interest> Interests { get; set; } = new List<Interest>();
+
+    public List<string> Photos { get; set; } = new List<string>();
     
     public string? LanguageCode { get; set; }
 

@@ -73,8 +73,11 @@ public enum BotState
     Register_WaitingForAge,
     Register_WaitingForGender,
     Register_WaitingForInterests,
+    Register_WaitingForHeight,
+    Register_WaitingForLocation,
+    Register_WaitingForPhotos,
     
     Menu,
-    
-    
+    Register_WaitingForDescription,
+    Register_ShowProfile
 }

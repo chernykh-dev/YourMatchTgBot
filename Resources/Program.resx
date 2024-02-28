@@ -45,4 +45,70 @@
     <data name="WaitingGender" xml:space="preserve">
         <value>Gender:</value>
     </data>
+    <data name="WaitingInterests" xml:space="preserve">
+        <value>Interests ({0} of {1}):</value>
+    </data>
+    <data name="📚" xml:space="preserve">
+        <value>books</value>
+    </data>
+    <data name="🎲" xml:space="preserve">
+        <value>games</value>
+    </data>
+    <data name="🚶" xml:space="preserve">
+        <value>walking</value>
+    </data>
+    <data name="💃" xml:space="preserve">
+        <value>clubs</value>
+    </data>
+    <data name="🎞" xml:space="preserve">
+        <value>movies</value>
+    </data>
+    <data name="🏅" xml:space="preserve">
+        <value>sport</value>
+    </data>
+    <data name="💻" xml:space="preserve">
+        <value>IT</value>
+    </data>
+    <data name="🚙" xml:space="preserve">
+        <value>cars</value>
+    </data>
+    <data name="🍲" xml:space="preserve">
+        <value>food</value>
+    </data>
+    <data name="🎧" xml:space="preserve">
+        <value>music</value>
+    </data>
+    <data name="🍳" xml:space="preserve">
+        <value>cooking</value>
+    </data>
+    <data name="🛍" xml:space="preserve">
+        <value>shopping</value>
+    </data>
+    <data name="🏔" xml:space="preserve">
+        <value>travelling</value>
+    </data>
+    <data name="WaitingHeight" xml:space="preserve">
+        <value>Height:</value>
+    </data>
+    <data name="📍" xml:space="preserve">
+        <value>Send location</value>
+    </data>
+    <data name="WaitingLocation" xml:space="preserve">
+        <value>City or location:</value>
+    </data>
+    <data name="GetPhotosFromProfile" xml:space="preserve">
+        <value>Use profile photos</value>
+    </data>
+    <data name="WaitingPhotos" xml:space="preserve">
+        <value>Upload up to {0} photos ({1} of {0}):</value>
+    </data>
+    <data name="Continue" xml:space="preserve">
+        <value>Continue</value>
+    </data>
+    <data name="GetProfileDescription" xml:space="preserve">
+        <value>Use profile description</value>
+    </data>
+    <data name="WaitingDescription" xml:space="preserve">
+        <value>Bio:</value>
+    </data>
 </root>

@@ -6,13 +6,19 @@ public class InterestService
 {
     private List<Interest> _interests = new List<Interest>()
     {
-        new Interest { Id = 1, Name = "книги" },
-        new Interest { Id = 2, Name = "игры" },
-        new Interest { Id = 3, Name = "прогулки" },
-        new Interest { Id = 4, Name = "клубы" },
-        new Interest { Id = 5, Name = "фильмы" },
-        new Interest { Id = 6, Name = "фитнес" },
-        new Interest { Id = 7, Name = "it" },
+        new Interest { Id = 1, Name = "📚" },
+        new Interest { Id = 2, Name = "🎲" },
+        new Interest { Id = 3, Name = "🚶" },
+        new Interest { Id = 4, Name = "💃" },
+        new Interest { Id = 5, Name = "🎞" },
+        new Interest { Id = 6, Name = "🏅" },
+        new Interest { Id = 7, Name = "💻" },
+        new Interest { Id = 8, Name = "🚙" },
+        new Interest { Id = 8, Name = "🏔" },
+        new Interest { Id = 8, Name = "🍲" },
+        new Interest { Id = 8, Name = "🎧" },
+        new Interest { Id = 8, Name = "🍳" },
+        new Interest { Id = 8, Name = "🛍" },
     };
 
     public Interest? GetInterestById(long id)
@@ -23,5 +29,15 @@ public class InterestService
     public List<Interest> GetInterestsByIds(params long[] ids)
     {
         return _interests.Where(i => ids.Contains(i.Id)).ToList();
+    }
+
+    public List<Interest> GetInterests()
+    {
+        return _interests;
+    }
+
+    public Interest? GetInterestByName(string name)
+    {
+        return _interests.FirstOrDefault(i => i.Name == name);
     }
 }

@@ -8,12 +8,14 @@ namespace YourMatchTgBot.StateMachineSystem.StateHandlers;
 
 public abstract class StateHandlerWithKeyboardMarkup : IStateHandler
 {
+    private const string PIN_SYMBOL = "📍";
+    
     public abstract Task RequestToUser(ITelegramBotClient botClient, Update update, User user,
         CancellationToken cancellationToken);
 
     public abstract Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user,
         CancellationToken cancellationToken);
-    
+
     protected static ReplyKeyboardMarkup GetReplyKeyboard(IEnumerable<IEnumerable<string>> buttons,
         bool resizeKeyboardMarkup = true)
     {
@@ -37,5 +39,15 @@ public abstract class StateHandlerWithKeyboardMarkup : IStateHandler
             .Append(new[] { new KeyboardButton(localizer["Cancel"]) });
 
         return replyKeyboardMarkup;
+    }
+
+    protected static ReplyKeyboardMarkup GetReplyKeyboardWithLocation(IStringLocalizer<Program> localizer,
+        bool resizeKeyboardMarkup = true)
+    {
+        var getLocationButton = KeyboardButton.WithRequestLocation($"{PIN_SYMBOL} {localizer[PIN_SYMBOL]}");
+        var keyboard = new ReplyKeyboardMarkup(new[] { getLocationButton });
+        keyboard.ResizeKeyboard = resizeKeyboardMarkup;
+
+        return keyboard;
     }
 }
