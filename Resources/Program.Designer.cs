@@ -146,5 +146,23 @@ namespace YourMatchTgBot.Resources {
                 return ResourceManager.GetString("WaitingDescription", resourceCulture);
             }
         }
+        
+        internal static string ReadyProfile {
+            get {
+                return ResourceManager.GetString("ReadyProfile", resourceCulture);
+            }
+        }
+        
+        internal static string FillProfileAgain {
+            get {
+                return ResourceManager.GetString("FillProfileAgain", resourceCulture);
+            }
+        }
+        
+        internal static string WaitingPartnerGender {
+            get {
+                return ResourceManager.GetString("WaitingPartnerGender", resourceCulture);
+            }
+        }
     }
 }

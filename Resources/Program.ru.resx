@@ -111,4 +111,13 @@
     <data name="WaitingDescription" xml:space="preserve">
         <value>Описание о себе:</value>
     </data>
+    <data name="ReadyProfile" xml:space="preserve">
+        <value>Заполненная анкета:</value>
+    </data>
+    <data name="FillProfileAgain" xml:space="preserve">
+        <value>Заполнить профиль заново</value>
+    </data>
+    <data name="WaitingPartnerGender" xml:space="preserve">
+        <value>Пол собеседника:</value>
+    </data>
 </root>
