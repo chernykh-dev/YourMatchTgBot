@@ -22,8 +22,9 @@ public class Program
         builder.Services.AddSingleton<ITelegramBotClient>(
             new TelegramBotClient("6840671790:AAFa-HhMJZXiNL7KLqY1enC4A87rUOj_w-g"));
         builder.Services.AddSingleton<StateMachine>();
-        builder.Services.AddSingleton<InterestService>();
-        builder.Services.AddSingleton<UserService>();
+        builder.Services.AddSingleton<IInterestService, InterestService>();
+        builder.Services.AddSingleton<IUserService, UserService>();
+        builder.Services.AddSingleton<UserProfileService>();
         builder.Services.AddHostedService<Worker>();
 
         /*

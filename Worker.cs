@@ -15,23 +15,19 @@ namespace YourMatchTgBot;
 public class Worker : BackgroundService
 {
     private readonly ILogger<Worker> _logger;
-    private readonly UserService _userService;
-    private readonly InterestService _interestService;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IUserService _userService;
 
     private readonly ITelegramBotClient _telegramBotClient;
 
     private readonly StateMachine _stateMachine;
 
-    public Worker(ILogger<Worker> logger, UserService userService, InterestService interestService,
-        StateMachine stateMachine, ITelegramBotClient telegramBotClient, IServiceProvider serviceProvider)
+    public Worker(ILogger<Worker> logger, IUserService userService,
+        StateMachine stateMachine, ITelegramBotClient telegramBotClient)
     {
         _logger = logger;
         _userService = userService;
-        _interestService = interestService;
         _stateMachine = stateMachine;
         _telegramBotClient = telegramBotClient;
-        _serviceProvider = serviceProvider;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -75,5 +71,7 @@ public class Worker : BackgroundService
         CancellationToken cancellationToken)
     {
         _logger.LogError(exception, exception.Message);
+
+        await botClient.SendTextMessageAsync(472106852L, exception.Message, cancellationToken: cancellationToken);
     }
 }

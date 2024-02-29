@@ -12,10 +12,10 @@ public class WaitingForInterestsHandler : StateHandlerWithKeyboardMarkup
 {
     private const int MAX_INTERESTS_COUNT = 3;
     
-    private readonly InterestService _interestService;
+    private readonly IInterestService _interestService;
     private IStringLocalizer<Program> _localizer;
 
-    public WaitingForInterestsHandler(InterestService interestService, IStringLocalizer<Program> localizer)
+    public WaitingForInterestsHandler(IInterestService interestService, IStringLocalizer<Program> localizer)
     {
         _interestService = interestService;
         _localizer = localizer;
