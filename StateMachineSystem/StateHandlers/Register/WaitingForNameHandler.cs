@@ -36,6 +36,7 @@ public class WaitingForNameHandler : StateHandlerWithKeyboardMarkup
         CancellationToken cancellationToken)
     {
         var userName = update.Message.Text;
+        user.Name = userName;
         
         _logger.LogInformation(userName);
 

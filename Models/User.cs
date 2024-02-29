@@ -11,6 +11,10 @@ public class User
     public string Name { get; set; }
 
     public short Age { get; set; }
+    
+    public Gender Gender { get; set; }
+    
+    public Gender PartnerGender { get; set; }
 
     public string City { get; set; }
 
@@ -27,14 +31,10 @@ public class User
     public List<string> Photos { get; set; } = new List<string>();
     
     public string? LanguageCode { get; set; }
+}
 
-
-    public string GetTextProfile()
-    {
-        var informationText = $"\u2649{ZodiacSign} \ud83d\udccf{Height} \ud83d\udcda{Education}";
-
-        var interestsText = Interests.Aggregate("", (current, interest) => current + $"#{interest.Name} ");
-
-        return $"{Name}, {Age}, {City}\n\n{Description}\n\n{informationText}\n\n{interestsText}";
-    }
+public enum Gender
+{
+    Man = 0,
+    Women
 }

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Localization;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
+using YourMatchTgBot.Models;
 using YourMatchTgBot.Services;
 using User = YourMatchTgBot.Models.User;
 
@@ -34,12 +35,12 @@ public class WaitingForGenderHandler : StateHandlerWithKeyboardMarkup
     {
         var userInput = update.Message.Text;
 
-        if (userInput != _localizer["Man"] && userInput != _localizer["Women"])
-        {
+        if (userInput == _localizer["Man"])
+            user.Gender = Gender.Man;
+        else if (userInput == _localizer["Women"])
+            user.Gender = Gender.Women;
+        else
             return;
-        }
-        
-        // Interests.
 
         user.State = BotState.Register_WaitingForInterests;
     }

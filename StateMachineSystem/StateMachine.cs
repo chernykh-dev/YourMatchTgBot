@@ -79,5 +79,7 @@ public enum BotState
     
     Menu,
     Register_WaitingForDescription,
-    Register_ShowProfile
+    Register_ShowProfile,
+    WatchProfiles,
+    Register_WaitingForPartnerGender
 }

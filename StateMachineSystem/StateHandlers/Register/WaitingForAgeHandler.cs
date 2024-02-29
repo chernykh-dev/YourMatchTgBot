@@ -55,7 +55,8 @@ public class WaitingForAgeHandler : StateHandlerWithKeyboardMarkup
         {
             return;
         }
-        
+
+        user.Age = (short)userAge;
         _logger.LogInformation(userAge.ToString());
 
         user.State = BotState.Register_WaitingForGender;
@@ -78,7 +79,7 @@ public class WaitingForAgeHandler : StateHandlerWithKeyboardMarkup
                 guessedUserAge = matches[0].Value;
                 
                 matches = Regex.Matches(userDescription, 
-                    @"(\d+)\s*(?:[yY][\.\/]?[oO]|years old|-year-old|л\.|лет|year)");
+                    @"(\d+)\s*(?:[yY][\.\/]?[oOeE]|years old|-year-old|л\.|лет|year)");
                 if (matches.Count > 0)
                     return GetReplyKeyboard(new[] { new[] { matches[0].Groups[0].Value } });
                 break;

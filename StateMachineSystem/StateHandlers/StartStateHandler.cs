@@ -39,6 +39,6 @@ public class StartStateHandler : IStateHandler
         
         _logger.LogInformation("User {{id:{chatId}}} started", chatId);
 
-        user.State = BotState.Register_WaitingForDescription;
+        user.State = BotState.Register_WaitingForName;
     }
 }

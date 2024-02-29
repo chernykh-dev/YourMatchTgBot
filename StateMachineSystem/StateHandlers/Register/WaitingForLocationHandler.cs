@@ -79,9 +79,13 @@ public class WaitingForLocationHandler : StateHandlerWithKeyboardMarkup
         }
 
         if (city == null)
-            throw new Exception();
-            
+            return;
+
+        // TODO: Необходимо обновлять базу, чтобы город - ссылка.
+        user.City = city;
         _logger.LogInformation("{City}", city);
+
+        user.State = BotState.Register_WaitingForPhotos;
     }
     
     private async Task<object> ParseJson(Uri uri, CancellationToken stoppingToken)
