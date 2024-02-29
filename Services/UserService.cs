@@ -3,13 +3,13 @@ using YourMatchTgBot.Models;
 
 namespace YourMatchTgBot.Services;
 
-public class UserService
+public class UserService : IUserService
 {
-    private readonly InterestService _interestService;
+    private readonly IInterestService _interestService;
 
     private List<User> _users;
 
-    public UserService(InterestService interestService)
+    public UserService(IInterestService interestService)
     {
         _interestService = interestService;
 

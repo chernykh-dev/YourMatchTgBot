@@ -2,7 +2,7 @@
 
 namespace YourMatchTgBot.Services;
 
-public class InterestService
+public class InterestService : IInterestService
 {
     private List<Interest> _interests = new List<Interest>()
     {
