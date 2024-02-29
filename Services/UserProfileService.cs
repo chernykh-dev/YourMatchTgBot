@@ -20,7 +20,7 @@ public class UserProfileService
         var photos = user.Photos;
 
         var album = photos
-            .Select(photoFileId => new InputMediaPhoto(InputFile.FromFileId(photoFileId)))
+            .Select(userPhoto => new InputMediaPhoto(InputFile.FromFileId(userPhoto.PhotoFileId)))
             .Cast<IAlbumInputMedia>()
             .ToList();
 

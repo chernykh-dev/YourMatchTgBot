@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using YourMatchTgBot.Services;
 using User = YourMatchTgBot.Models.User;
 
 namespace YourMatchTgBot.StateMachineSystem.StateHandlers.Register;
@@ -17,10 +18,13 @@ public class WaitingForLocationHandler : StateHandlerWithKeyboardMarkup
 
     private readonly HttpClient _httpClient = new HttpClient();
 
-    public WaitingForLocationHandler(IStringLocalizer<Program> localizer, ILogger<WaitingForLocationHandler> logger)
+    private readonly ICityService _cityService;
+
+    public WaitingForLocationHandler(IStringLocalizer<Program> localizer, ILogger<WaitingForLocationHandler> logger, ICityService cityService)
     {
         _localizer = localizer;
         _logger = logger;
+        _cityService = cityService;
     }
 
     public override async Task RequestToUser(ITelegramBotClient botClient, Update update, User user, CancellationToken cancellationToken)
@@ -81,8 +85,10 @@ public class WaitingForLocationHandler : StateHandlerWithKeyboardMarkup
         if (city == null)
             return;
 
-        // TODO: Необходимо обновлять базу, чтобы город - ссылка.
-        user.City = city;
+        var existingCity = _cityService.GetCityByName(city);
+
+        user.City = existingCity ?? _cityService.AddCity(city);
+        
         _logger.LogInformation("{City}", city);
 
         user.State = BotState.Register_WaitingForPhotos;

@@ -11,9 +11,14 @@
 
     <ItemGroup>
         <PackageReference Include="Geolocation" Version="1.2.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0-preview.1.24081.2">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.0-preview.1.24081.5" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.0-preview.1.24081.5" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.0-preview.1" />
         <PackageReference Include="Stateless" Version="5.15.0" />
         <PackageReference Include="Telegram.Bot" Version="20.0.0-alpha.1" />
     </ItemGroup>
@@ -40,5 +45,9 @@
         <AutoGen>True</AutoGen>
         <DependentUpon>Program.ru.resx</DependentUpon>
       </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Volumes\Data\Db\" />
     </ItemGroup>
 </Project>

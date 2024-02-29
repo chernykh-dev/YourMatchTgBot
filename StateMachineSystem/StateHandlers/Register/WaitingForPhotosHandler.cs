@@ -2,6 +2,7 @@ using Microsoft.Extensions.Localization;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
+using YourMatchTgBot.Models;
 using User = YourMatchTgBot.Models.User;
 
 namespace YourMatchTgBot.StateMachineSystem.StateHandlers.Register;
@@ -55,7 +56,7 @@ public class WaitingForPhotosHandler : StateHandlerWithKeyboardMarkup
 
             foreach (var photo in photos.Photos)
             {
-                user.Photos.Add(photo.Last().FileId);
+                user.Photos.Add(new UserPhoto { UserId = user.Id, PhotoFileId = photo.Last().FileId });
             }
 
             user.State = BotState.Register_WaitingForDescription;
@@ -68,7 +69,7 @@ public class WaitingForPhotosHandler : StateHandlerWithKeyboardMarkup
             return;
         }
 
-        user.Photos.Add(update.Message.Photo.Last().FileId);
+        user.Photos.Add(new UserPhoto { UserId = user.Id, PhotoFileId = update.Message.Photo.Last().FileId });
 
         if (user.Photos.Count == MAX_PHOTOS_COUNT)
         {

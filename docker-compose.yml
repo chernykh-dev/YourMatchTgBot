@@ -1,0 +1,21 @@
+services:
+  apppostgres:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=app
+      - POSTGRES_PASSWORD=app
+      - POSTGRES_DB=ymdb
+    volumes:
+      - ./Volumes/Data/Db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+        
+  app:
+    # image: app-bot
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - apppostgres
