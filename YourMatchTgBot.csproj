@@ -46,8 +46,4 @@
         <DependentUpon>Program.ru.resx</DependentUpon>
       </Compile>
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Volumes\Data\Db\" />
-    </ItemGroup>
 </Project>
