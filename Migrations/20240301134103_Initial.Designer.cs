@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using YourMatchTgBot;
 
 #nullable disable
@@ -11,30 +10,39 @@ using YourMatchTgBot;
 namespace YourMatchTgBot.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240301121641_Initial")]
+    [Migration("20240301134103_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.0-preview.1.24081.2")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.0-preview.1.24081.2");
 
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+            modelBuilder.Entity("InterestUser", b =>
+                {
+                    b.Property<int>("InterestsId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("UsersId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("InterestsId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("InterestUser");
+                });
 
             modelBuilder.Entity("YourMatchTgBot.Models.City", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -52,20 +60,13 @@ namespace YourMatchTgBot.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<long?>("UserId")
-                        .HasColumnType("bigint");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Interests");
 
@@ -141,42 +142,40 @@ namespace YourMatchTgBot.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<short?>("Age")
-                        .HasColumnType("smallint");
+                        .HasColumnType("INTEGER");
 
                     b.Property<long?>("CityId")
-                        .HasColumnType("bigint");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Education")
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
                     b.Property<int?>("Gender")
-                        .HasColumnType("integer");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int?>("Height")
-                        .HasColumnType("integer");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("LanguageCode")
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
                     b.Property<int?>("PartnerGender")
-                        .HasColumnType("integer");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("State")
-                        .HasColumnType("integer");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("ZodiacSign")
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -188,21 +187,29 @@ namespace YourMatchTgBot.Migrations
             modelBuilder.Entity("YourMatchTgBot.Models.UserPhoto", b =>
                 {
                     b.Property<long>("UserId")
-                        .HasColumnType("bigint");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("PhotoFileId")
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("UserId", "PhotoFileId");
 
                     b.ToTable("UserPhoto");
                 });
 
-            modelBuilder.Entity("YourMatchTgBot.Models.Interest", b =>
+            modelBuilder.Entity("InterestUser", b =>
                 {
+                    b.HasOne("YourMatchTgBot.Models.Interest", null)
+                        .WithMany()
+                        .HasForeignKey("InterestsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("YourMatchTgBot.Models.User", null)
-                        .WithMany("Interests")
-                        .HasForeignKey("UserId");
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("YourMatchTgBot.Models.User", b =>
@@ -225,8 +232,6 @@ namespace YourMatchTgBot.Migrations
 
             modelBuilder.Entity("YourMatchTgBot.Models.User", b =>
                 {
-                    b.Navigation("Interests");
-
                     b.Navigation("Photos");
                 });
 #pragma warning restore 612, 618

@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using YourMatchTgBot.Models;
 
 namespace YourMatchTgBot.Services;
@@ -13,7 +14,18 @@ public class UserService : IUserService
 
     public User? GetUserById(long id)
     {
-        return _context.Users.FirstOrDefault(u => u.Id == id);
+        return _context.Users
+            .Include(u => u.Interests)
+            .Include(u => u.Photos)
+            .FirstOrDefault(u => u.Id == id);
+    }
+
+    public User? FindUserForUser(User user)
+    {
+        return _context.Users
+            .Include(u => u.Interests)
+            .Include(u => u.Photos)
+            .FirstOrDefault(u => u.Id != user.Id);
     }
 
     public User AddUser(User user)

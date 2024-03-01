@@ -13,6 +13,6 @@ public static class UserExtensions
         var interestsText = user.Interests
             .Aggregate("", (current, interest) => current + $"{interest.Name}{localizer[interest.Name]}  ");
 
-        return $"{user.Name}, {user.Age}, {user.City}\n\n{commonInfoText}  {interestsText}\n\n{user.Description}";
+        return $"{user.Name}, {user.Age}, {user.City.Name}\n\n{commonInfoText}  {interestsText}\n\n{user.Description}";
     }
 }

@@ -21,7 +21,8 @@ public class Program
 
         builder.Services.AddDbContext<ApplicationDbContext>(opt =>
         {
-            opt.UseNpgsql(builder.Configuration.GetSection("DatabaseConfig")["PostgresSQL"]);
+            // opt.UseNpgsql(builder.Configuration.GetSection("DatabaseConfig")["PostgresSQL"]);
+            opt.UseSqlite("Filename=Db/Lite.db");
         }, contextLifetime: ServiceLifetime.Singleton);
         
         builder.Services.AddReflectionServices();
@@ -30,7 +31,7 @@ public class Program
         builder.Services.AddSingleton<StateMachine>();
         builder.Services.AddSingleton<IInterestService, InterestService>();
         builder.Services.AddSingleton<IUserService, UserService>();
-        builder.Services.AddSingleton<ICityService, LocalCityService>();
+        builder.Services.AddSingleton<ICityService, CityService>();
         builder.Services.AddSingleton<UserProfileService>();
         builder.Services.AddHostedService<Worker>();
 
@@ -43,10 +44,6 @@ public class Program
         */
 
         var host = builder.Build();
-
-        using var context = host.Services.GetService<ApplicationDbContext>();
-        
-        // context.Database.Migrate();
 
         host.Run();
     }

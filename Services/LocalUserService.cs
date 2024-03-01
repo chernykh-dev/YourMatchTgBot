@@ -38,6 +38,11 @@ public class LocalUserService : IUserService
         return _users.FirstOrDefault(u => u.Id == id);
     }
 
+    public User? FindUserForUser(User user)
+    {
+        throw new NotImplementedException();
+    }
+
     public User AddUser(User user)
     {
         _users.Add(user);

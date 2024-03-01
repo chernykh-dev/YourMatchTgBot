@@ -69,6 +69,9 @@ public class WaitingForPhotosHandler : StateHandlerWithKeyboardMarkup
             return;
         }
 
+        if (update.Message.Photo == null)
+            return;
+        
         user.Photos.Add(new UserPhoto { UserId = user.Id, PhotoFileId = update.Message.Photo.Last().FileId });
 
         if (user.Photos.Count == MAX_PHOTOS_COUNT)

@@ -1,43 +1,33 @@
-﻿using YourMatchTgBot.Models;
+using YourMatchTgBot.Models;
 
 namespace YourMatchTgBot.Services;
 
 public class InterestService : IInterestService
 {
-    private List<Interest> _interests = new List<Interest>()
-    {
-        new Interest { Id = 1, Name = "📚" },
-        new Interest { Id = 2, Name = "🎲" },
-        new Interest { Id = 3, Name = "🚶" },
-        new Interest { Id = 4, Name = "💃" },
-        new Interest { Id = 5, Name = "🎞" },
-        new Interest { Id = 6, Name = "🏅" },
-        new Interest { Id = 7, Name = "💻" },
-        new Interest { Id = 8, Name = "🚙" },
-        new Interest { Id = 8, Name = "🏔" },
-        new Interest { Id = 8, Name = "🍲" },
-        new Interest { Id = 8, Name = "🎧" },
-        new Interest { Id = 8, Name = "🍳" },
-        new Interest { Id = 8, Name = "🛍" },
-    };
+    private readonly ApplicationDbContext _context;
 
+    public InterestService(ApplicationDbContext context)
+    {
+        _context = context;
+    }
+    
     public Interest? GetInterestById(long id)
     {
-        return _interests.FirstOrDefault(i => i.Id == id);
+        return _context.Interests.Find(id);
     }
 
     public List<Interest> GetInterestsByIds(params long[] ids)
     {
-        return _interests.Where(i => ids.Contains(i.Id)).ToList();
+        return _context.Interests.Where(i => ids.Any(id => id == i.Id)).ToList();
     }
 
     public List<Interest> GetInterests()
     {
-        return _interests;
+        return _context.Interests.ToList();
     }
 
     public Interest? GetInterestByName(string name)
     {
-        return _interests.FirstOrDefault(i => i.Name == name);
+        return _context.Interests.FirstOrDefault(i => i.Name == name);
     }
 }
