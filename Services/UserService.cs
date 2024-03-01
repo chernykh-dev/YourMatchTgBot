@@ -18,6 +18,10 @@ public class UserService : IUserService
 
     public User AddUser(User user)
     {
-        throw new NotImplementedException();
+        var userEntry = _context.Users.Add(user);
+
+        _context.SaveChanges();
+
+        return userEntry.Entity;
     }
 }

@@ -16,18 +16,20 @@ public class Worker : BackgroundService
 {
     private readonly ILogger<Worker> _logger;
     private readonly IUserService _userService;
+    private readonly ApplicationDbContext _context;
 
     private readonly ITelegramBotClient _telegramBotClient;
 
     private readonly StateMachine _stateMachine;
 
     public Worker(ILogger<Worker> logger, IUserService userService,
-        StateMachine stateMachine, ITelegramBotClient telegramBotClient)
+        StateMachine stateMachine, ITelegramBotClient telegramBotClient, ApplicationDbContext context)
     {
         _logger = logger;
         _userService = userService;
         _stateMachine = stateMachine;
         _telegramBotClient = telegramBotClient;
+        _context = context;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -65,6 +67,8 @@ public class Worker : BackgroundService
         }
 
         await _stateMachine.ActivateState(botClient, update, user, cancellationToken);
+
+        await _context.SaveChangesAsync(cancellationToken);
     }
     
     private async Task HandleError(ITelegramBotClient botClient, Exception exception,

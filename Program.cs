@@ -30,7 +30,7 @@ public class Program
         builder.Services.AddSingleton<StateMachine>();
         builder.Services.AddSingleton<IInterestService, InterestService>();
         builder.Services.AddSingleton<IUserService, UserService>();
-        builder.Services.AddSingleton<ICityService, CityService>();
+        builder.Services.AddSingleton<ICityService, LocalCityService>();
         builder.Services.AddSingleton<UserProfileService>();
         builder.Services.AddHostedService<Worker>();
 
@@ -46,7 +46,7 @@ public class Program
 
         using var context = host.Services.GetService<ApplicationDbContext>();
         
-        context.Database.Migrate();
+        // context.Database.Migrate();
 
         host.Run();
     }
