@@ -144,7 +144,13 @@
     <data name="Error_IncorrectVariant" xml:space="preserve">
         <value>Пожалуйста, выберите из вариантов</value>
     </data>
-    <data name="LeaveCurrent" xml:space="preserve">
+    <data name="LeaveCurrentInterests" xml:space="preserve">
         <value>Оставить текущие: </value>
+    </data>
+    <data name="LeaveCurrentDescription" xml:space="preserve">
+        <value>Оставить текущее</value>
+    </data>
+    <data name="LeaveCurrentPhotos" xml:space="preserve">
+        <value>Оставить текущие</value>
     </data>
 </root>

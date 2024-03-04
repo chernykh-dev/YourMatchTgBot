@@ -213,9 +213,21 @@ namespace YourMatchTgBot.Resources {
             }
         }
         
-        internal static string LeaveCurrent {
+        internal static string LeaveCurrentInterests {
             get {
-                return ResourceManager.GetString("LeaveCurrent", resourceCulture);
+                return ResourceManager.GetString("LeaveCurrentInterests", resourceCulture);
+            }
+        }
+        
+        internal static string LeaveCurrentDescription {
+            get {
+                return ResourceManager.GetString("LeaveCurrentDescription", resourceCulture);
+            }
+        }
+        
+        internal static string LeaveCurrentPhotos {
+            get {
+                return ResourceManager.GetString("LeaveCurrentPhotos", resourceCulture);
             }
         }
     }
