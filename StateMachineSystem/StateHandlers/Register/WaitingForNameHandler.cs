@@ -24,11 +24,11 @@ public class WaitingForNameHandler : StateHandlerWithKeyboardMarkup
     {
         var expectedName = update.Message.From.FirstName;
 
-        var keyboardButtons = new[] { new List<string> { expectedName } };
+        var keyboardButtons = new List<List<string>> { new () { expectedName } };
 
         if (user.Name != null && user.Name != expectedName)
         {
-            keyboardButtons[0].Add(user.Name);
+            keyboardButtons.Insert(0, new() { user.Name });
         }
         
         var replyKeyboardMarkup = GetReplyKeyboard(keyboardButtons);
