@@ -17,7 +17,14 @@ public class WaitingForHeightHandler : StateHandlerWithKeyboardMarkup
 
     public override async Task RequestToUser(ITelegramBotClient botClient, Update update, User user, CancellationToken cancellationToken)
     {
-        var replyKeyboardTexts = new List<List<string>>(); 
+        var replyKeyboardTexts = new List<List<string>>();
+
+        if (user.Height != null)
+        {
+            replyKeyboardTexts.Add(new () { user.Height.ToString() });
+            
+            replyKeyboardTexts.Add(new () { "​" });
+        }
         
         for (var i = 140; i < 211; i++)
         {
@@ -37,9 +44,17 @@ public class WaitingForHeightHandler : StateHandlerWithKeyboardMarkup
 
     public override async Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user, CancellationToken cancellationToken)
     {
-        var userHeight = update.Message.Text;
+        var userHeightString = update.Message.Text;
 
-        user.Height = int.Parse(userHeight);
+        if (!int.TryParse(userHeightString, out var userHeight))
+        {
+            await botClient.SendTextMessageAsync(update.Message.Chat, _localizer["Error_IncorrectVariant"],
+                cancellationToken: cancellationToken);
+
+            return;
+        }
+        
+        user.Height = userHeight;
 
         user.State = BotState.Register_WaitingForLocation;
     }
