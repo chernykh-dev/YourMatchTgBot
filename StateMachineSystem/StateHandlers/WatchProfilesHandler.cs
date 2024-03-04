@@ -20,6 +20,16 @@ public class WatchProfilesHandler : StateHandlerWithKeyboardMarkup
     public override async Task RequestToUser(ITelegramBotClient botClient, Update update, User user, CancellationToken cancellationToken)
     {
         var findedUser = _userService.FindUserForUser(user);
+
+        if (findedUser == null)
+        {
+            await botClient.SendTextMessageAsync(update.Message.Chat,
+                "Users not found", cancellationToken: cancellationToken);
+
+            user.State = BotState.Register_ShowProfile;
+
+            return;
+        }
         
         var replyKeyboardMarkup = GetReplyKeyboard(new[] { new string[] { "Ok" }, new string[] { "Not Ok" } });
         
