@@ -42,6 +42,6 @@ public class WaitingForGenderHandler : StateHandlerWithKeyboardMarkup
         else
             return;
 
-        user.State = BotState.Register_WaitingForInterests;
+        user.State = BotState.Register_WaitingForPartnerGender;
     }
 }
