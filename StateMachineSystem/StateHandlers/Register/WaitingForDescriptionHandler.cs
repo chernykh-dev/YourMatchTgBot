@@ -47,6 +47,15 @@ public class WaitingForDescriptionHandler : StateHandlerWithKeyboardMarkup
             if (userDescription == null)
                 return;
         }
+
+        if (userDescription.Length > 120)
+        {
+            await botClient.SendTextMessageAsync(update.Message.Chat,
+                _localizer["Error_LongDescription"],
+                cancellationToken: cancellationToken);
+
+            return;
+        }
         
         user.Description = userDescription;
         user.State = BotState.Register_ShowProfile;
