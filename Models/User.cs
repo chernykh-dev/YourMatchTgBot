@@ -18,7 +18,7 @@ public class User
     
     public int? Height { get; set; }
 
-    public City? City { get; set; }
+    public virtual City? City { get; set; }
 
     public string? Description { get; set; }
 
@@ -28,7 +28,7 @@ public class User
     
     public string? LanguageCode { get; set; }
 
-    public List<Interest> Interests { get; set; } = new ();
+    public virtual List<Interest> Interests { get; set; } = new ();
 
-    public List<UserPhoto> Photos { get; set; } = new ();
+    public virtual List<UserPhoto> Photos { get; set; } = new ();
 }
