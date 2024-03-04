@@ -141,4 +141,7 @@
     <data name="Error_IncorrectAge" xml:space="preserve">
         <value>Incorrect input, age must be no more 125</value>
     </data>
+    <data name="Error_IncorrectVariant" xml:space="preserve">
+        <value>Please select from the options</value>
+    </data>
 </root>

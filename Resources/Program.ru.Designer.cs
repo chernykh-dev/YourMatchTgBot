@@ -206,5 +206,11 @@ namespace YourMatchTgBot.Resources {
                 return ResourceManager.GetString("Error_IncorrectAge", resourceCulture);
             }
         }
+        
+        internal static string Error_IncorrectVariant {
+            get {
+                return ResourceManager.GetString("Error_IncorrectVariant", resourceCulture);
+            }
+        }
     }
 }
