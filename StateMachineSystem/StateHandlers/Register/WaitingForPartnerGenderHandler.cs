@@ -18,9 +18,18 @@ public class WaitingForPartnerGenderHandler : StateHandlerWithKeyboardMarkup
 
     public override async Task RequestToUser(ITelegramBotClient botClient, Update update, User user, CancellationToken cancellationToken)
     {
-        var replyKeyboardMarkup = GetReplyKeyboard(new[] { new string[] { _localizer["Man"], _localizer["Women"] } });
+        var keyboardButtons = new List<List<string>> { new() { _localizer["Man"], _localizer["Women"] } };
 
-        await botClient.SendTextMessageAsync(update.Message.Chat.Id, _localizer["WaitingPartnerGender"], replyMarkup: replyKeyboardMarkup,
+        if (user.PartnerGender != null)
+        {
+            keyboardButtons.Add(new () { _localizer[user.PartnerGender.ToString()] });
+        }
+        
+        var replyKeyboardMarkup = GetReplyKeyboard(keyboardButtons);
+
+        await botClient.SendTextMessageAsync(update.Message.Chat,
+            _localizer["WaitingPartnerGender"],
+            replyMarkup: replyKeyboardMarkup,
             cancellationToken: cancellationToken);
     }
 
@@ -29,11 +38,20 @@ public class WaitingForPartnerGenderHandler : StateHandlerWithKeyboardMarkup
         var userInput = update.Message.Text;
 
         if (userInput == _localizer["Man"])
+        {
             user.PartnerGender = Gender.Man;
+        }
         else if (userInput == _localizer["Women"])
+        {
             user.PartnerGender = Gender.Women;
+        }
         else
+        {
+            await botClient.SendTextMessageAsync(update.Message.Chat, _localizer["Error_IncorrectVariant"],
+                cancellationToken: cancellationToken);
+            
             return;
+        }
 
         user.State = BotState.Register_WaitingForInterests;
     }
