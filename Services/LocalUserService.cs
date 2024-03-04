@@ -27,7 +27,7 @@ public class LocalUserService : IUserService
                 ZodiacSign = "Дева",
                 Height = 175,
                 Education = "Высшее",
-                Interests = _interestService.GetInterestsByIds(2, 3, 5, 7)
+                // Interests = _interestService.GetInterestsByIds(2, 3, 5, 7)
             }
         };
         
