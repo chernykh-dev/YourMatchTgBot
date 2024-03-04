@@ -164,5 +164,47 @@ namespace YourMatchTgBot.Resources {
                 return ResourceManager.GetString("WaitingPartnerGender", resourceCulture);
             }
         }
+        
+        internal static string Yes {
+            get {
+                return ResourceManager.GetString("Yes", resourceCulture);
+            }
+        }
+        
+        internal static string No {
+            get {
+                return ResourceManager.GetString("No", resourceCulture);
+            }
+        }
+        
+        internal static string CorrectCity {
+            get {
+                return ResourceManager.GetString("CorrectCity", resourceCulture);
+            }
+        }
+        
+        internal static string Error_LongName {
+            get {
+                return ResourceManager.GetString("Error_LongName", resourceCulture);
+            }
+        }
+        
+        internal static string Error_LongDescription {
+            get {
+                return ResourceManager.GetString("Error_LongDescription", resourceCulture);
+            }
+        }
+        
+        internal static string Error_TooYoung {
+            get {
+                return ResourceManager.GetString("Error_TooYoung", resourceCulture);
+            }
+        }
+        
+        internal static string Error_IncorrectAge {
+            get {
+                return ResourceManager.GetString("Error_IncorrectAge", resourceCulture);
+            }
+        }
     }
 }

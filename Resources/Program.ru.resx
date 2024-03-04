@@ -120,4 +120,25 @@
     <data name="WaitingPartnerGender" xml:space="preserve">
         <value>Пол собеседника:</value>
     </data>
+    <data name="Yes" xml:space="preserve">
+        <value>Да</value>
+    </data>
+    <data name="No" xml:space="preserve">
+        <value>Нет</value>
+    </data>
+    <data name="CorrectCity" xml:space="preserve">
+        <value>Правильный город: {0}?</value>
+    </data>
+    <data name="Error_LongName" xml:space="preserve">
+        <value>Длинное имя (макс. 40 символов)</value>
+    </data>
+    <data name="Error_LongDescription" xml:space="preserve">
+        <value>Длинное описание (макс. 120 символов)</value>
+    </data>
+    <data name="Error_TooYoung" xml:space="preserve">
+        <value>Ты слишком молод, приходи позже</value>
+    </data>
+    <data name="Error_IncorrectAge" xml:space="preserve">
+        <value>Неверный ввод, возраст должен быть не более 125</value>
+    </data>
 </root>
