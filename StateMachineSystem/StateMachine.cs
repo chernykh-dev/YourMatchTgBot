@@ -1,6 +1,7 @@
 using System.Reflection;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
 using YourMatchTgBot.ReflectionExtensions;
 using YourMatchTgBot.Services;
 using User = YourMatchTgBot.Models.User;
@@ -11,10 +12,13 @@ public class StateMachine
 {
     public const BotState InitialState = BotState.Start;
 
+    private readonly IUserService _userService;
+    
     private readonly Dictionary<BotState, IStateHandler> _stateHandlers = new();
 
-    public StateMachine(IDependencyReflectorFactory dependencyReflectorFactory)
+    public StateMachine(IDependencyReflectorFactory dependencyReflectorFactory, IUserService userService)
     {
+        _userService = userService;
         foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
         {
             var handlerAttribute = type.GetCustomAttribute<StateHandlerAttribute>();
@@ -36,6 +40,17 @@ public class StateMachine
         // Фильтры каждого сообщения от пользователя.
         if (update.Message is not { } message)
             return;
+
+        if (update.Message.Text == "/clear")
+        {
+            user.State = BotState.Start;
+
+            await botClient.SendTextMessageAsync(update.Message.Chat, "Enter /start",
+                replyMarkup: new ReplyKeyboardRemove(),
+                cancellationToken: cancellationToken);
+            
+            return;
+        }
 
         var languageCode = user.LanguageCode;
 
