@@ -153,4 +153,10 @@
     <data name="LeaveCurrentPhotos" xml:space="preserve">
         <value>Оставить текущие</value>
     </data>
+    <data name="AcceptTerms" xml:space="preserve">
+        <value>Вы принимаете пользовательское соглашение?</value>
+    </data>
+    <data name="NotAcceptTerms" xml:space="preserve">
+        <value>Для пользования ботом необходимо согласиться с пользовательским соглашением</value>
+    </data>
 </root>

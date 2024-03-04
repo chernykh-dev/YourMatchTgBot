@@ -230,5 +230,17 @@ namespace YourMatchTgBot.Resources {
                 return ResourceManager.GetString("LeaveCurrentPhotos", resourceCulture);
             }
         }
+        
+        internal static string AcceptTerms {
+            get {
+                return ResourceManager.GetString("AcceptTerms", resourceCulture);
+            }
+        }
+        
+        internal static string NotAcceptTerms {
+            get {
+                return ResourceManager.GetString("NotAcceptTerms", resourceCulture);
+            }
+        }
     }
 }
