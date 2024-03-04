@@ -24,10 +24,17 @@ public class WaitingForNameHandler : StateHandlerWithKeyboardMarkup
     {
         var expectedName = update.Message.From.FirstName;
 
-        var replyKeyboardMarkup = GetReplyKeyboard(new[] { new[] { expectedName } });
+        var keyboardButtons = new[] { new List<string> { expectedName } };
+
+        if (user.Name != null && user.Name != expectedName)
+        {
+            keyboardButtons[0].Add(user.Name);
+        }
+        
+        var replyKeyboardMarkup = GetReplyKeyboard(keyboardButtons);
 
         // Можно вынести отправку text message.
-        await botClient.SendTextMessageAsync(update.Message.Chat.Id, _localizer["WaitingName"],
+        await botClient.SendTextMessageAsync(update.Message.Chat, _localizer["WaitingName"],
             replyMarkup: replyKeyboardMarkup,
             cancellationToken: cancellationToken);
     }
