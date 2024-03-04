@@ -56,6 +56,26 @@ public class WaitingForAgeHandler : StateHandlerWithKeyboardMarkup
             return;
         }
 
+        if (userAge > 125)
+        {
+            await botClient.SendTextMessageAsync(update.Message.Chat.Id,
+                _localizer["Error_IncorrectAge"],
+                cancellationToken: cancellationToken);
+
+            return;
+        }
+
+        if (userAge < 16)
+        {
+            await botClient.SendTextMessageAsync(update.Message.Chat.Id,
+                _localizer["Error_TooYoung"],
+                cancellationToken: cancellationToken);
+
+            user.State = BotState.Start;
+
+            return;
+        }
+
         user.Age = (short)userAge;
         _logger.LogInformation(userAge.ToString());
 
