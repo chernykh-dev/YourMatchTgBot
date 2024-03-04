@@ -37,7 +37,7 @@ public class WaitingForInterestsHandler : StateHandlerWithKeyboardMarkup
                 userInterests.Append(interest.Name);
             }
             
-            replyKeyboardTexts.Add(new () { _localizer["LeaveCurrent"] + userInterests });
+            replyKeyboardTexts.Add(new () { _localizer["LeaveCurrentInterests"] + userInterests });
         }
 
         var index = replyKeyboardTexts.Count;
@@ -70,7 +70,7 @@ public class WaitingForInterestsHandler : StateHandlerWithKeyboardMarkup
     {
         var messageText = update.Message.Text;
 
-        if (user.Interests.Count > 0 && messageText.Contains(_localizer["LeaveCurrent"]))
+        if (user.Interests.Count > 0 && messageText.Contains(_localizer["LeaveCurrentInterests"]))
         {
             user.State = BotState.Register_WaitingForHeight;
 
