@@ -52,6 +52,9 @@ public class Worker : BackgroundService
     private async Task HandleUpdate(ITelegramBotClient botClient, Update update,
         CancellationToken cancellationToken)
     {
+        if (update.Message == null)
+            return;
+        
         var userId = update.GetUserId();
         var user = _userService.GetUserById(userId);
         
