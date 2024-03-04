@@ -15,11 +15,15 @@ public class WaitingForAgeHandler : StateHandlerWithKeyboardMarkup
 {
     private readonly ILogger<WaitingForAgeHandler> _logger;
     private readonly IStringLocalizer<Program> _localizer;
+    private readonly IUserService _userService;
 
-    public WaitingForAgeHandler(ILogger<WaitingForAgeHandler> logger, IStringLocalizer<Program> localizer)
+    public WaitingForAgeHandler(ILogger<WaitingForAgeHandler> logger,
+        IStringLocalizer<Program> localizer,
+        IUserService userService)
     {
         _logger = logger;
         _localizer = localizer;
+        _userService = userService;
     }
 
     public override async Task RequestToUser(ITelegramBotClient botClient, Update update, User user,
@@ -29,7 +33,14 @@ public class WaitingForAgeHandler : StateHandlerWithKeyboardMarkup
         
         var userDescription = chat.Bio;
 
-        var replyKeyboardMarkup = GetGuessedUserAgeReplyKeyboardMarkup(userDescription);
+        var keyboardButtons = GetGuessedUserAgeReplyKeyboard(userDescription);
+        
+        if (user.Age != null && user.Age.ToString() != keyboardButtons[0][0])
+        {
+            keyboardButtons[0].Add(user.Age.ToString());
+        }
+
+        var replyKeyboardMarkup = GetReplyKeyboard(keyboardButtons);
 
         await botClient.SendTextMessageAsync(update.Message.Chat.Id,
             string.Format(_localizer["WaitingAge"], GetLocalizedShortDatePattern()),
@@ -51,7 +62,7 @@ public class WaitingForAgeHandler : StateHandlerWithKeyboardMarkup
         {
             userAge = (uint)(DateTime.Now.Year - userBirthDate.Year);
         }
-        else if (!uint.TryParse(userInput, out userAge) || !IsValidAge(userAge))
+        else if (!uint.TryParse(userInput, out userAge))
         {
             return;
         }
@@ -82,11 +93,12 @@ public class WaitingForAgeHandler : StateHandlerWithKeyboardMarkup
         user.State = BotState.Register_WaitingForGender;
     }
     
-    private static IReplyMarkup GetGuessedUserAgeReplyKeyboardMarkup(string? userDescription)
+    private static List<List<string>> GetGuessedUserAgeReplyKeyboard(string? userDescription)
     {
-        var replyKeyboardRemove = new ReplyKeyboardRemove();
+        var emptyKeyboard = new List<List<string>>();
+        
         if (userDescription == null || string.IsNullOrEmpty(userDescription))
-            return replyKeyboardRemove;
+            return emptyKeyboard;
         
         string? guessedUserAge = null;
         var matches = Regex.Matches(userDescription, @"\d+");
@@ -94,26 +106,21 @@ public class WaitingForAgeHandler : StateHandlerWithKeyboardMarkup
         switch (matches.Count)
         {
             case <= 0:
-                return replyKeyboardRemove;
+                return emptyKeyboard;
             case > 1:
                 guessedUserAge = matches[0].Value;
                 
                 matches = Regex.Matches(userDescription, 
                     @"(\d+)\s*(?:[yY][\.\/]?[oOeE]|years old|-year-old|л\.|лет|year)");
                 if (matches.Count > 0)
-                    return GetReplyKeyboard(new[] { new[] { matches[0].Groups[0].Value } });
+                    return new () { new List<string> { matches[0].Groups[0].Value } };
                 break;
             default:
                 guessedUserAge = matches[0].Value;
                 break;
         }
         
-        return GetReplyKeyboard(new[] { new[] { guessedUserAge } });
-    }
-
-    private static bool IsValidAge(uint userAge)
-    {
-        return userAge <= 125;
+        return new () { new List<string> { guessedUserAge } };
     }
 
     private string GetLocalizedShortDatePattern()
