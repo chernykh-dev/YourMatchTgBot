@@ -18,7 +18,12 @@ public class WaitingForDescriptionHandler : StateHandlerWithKeyboardMarkup
 
     public override async Task RequestToUser(ITelegramBotClient botClient, Update update, User user, CancellationToken cancellationToken)
     {
-        IReplyMarkup replyKeyboardMarkup = new ReplyKeyboardRemove();
+        var keyboardButtons = new List<List<string>>();
+
+        if (user.Description != null)
+        {
+            keyboardButtons.Add(new () { _localizer["LeaveCurrentDescription"] });
+        }
         
         var chat = await botClient.GetChatAsync(update.Message.Chat, cancellationToken: cancellationToken);
         
@@ -26,18 +31,27 @@ public class WaitingForDescriptionHandler : StateHandlerWithKeyboardMarkup
 
         if (userDescription != null)
         {
-            replyKeyboardMarkup = GetReplyKeyboard(new[] { new string[] { _localizer["GetProfileDescription"] } });
+            keyboardButtons.Add(new () { _localizer["GetProfileDescription"] });
         }
+
+        var replyKeyboard = GetReplyKeyboard(keyboardButtons);
         
         await botClient.SendTextMessageAsync(update.Message.Chat,
             _localizer["WaitingDescription"],
-            replyMarkup: replyKeyboardMarkup, cancellationToken: cancellationToken);
+            replyMarkup: replyKeyboard, cancellationToken: cancellationToken);
     }
 
     public override async Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user, CancellationToken cancellationToken)
     {
         var userDescription = update.Message.Text;
 
+        if (userDescription == _localizer["LeaveCurrentDescription"])
+        {
+            user.State = BotState.Register_ShowProfile;
+            
+            return;
+        }
+        
         if (userDescription == _localizer["GetProfileDescription"])
         {
             var chat = await botClient.GetChatAsync(update.Message.Chat, cancellationToken: cancellationToken);
