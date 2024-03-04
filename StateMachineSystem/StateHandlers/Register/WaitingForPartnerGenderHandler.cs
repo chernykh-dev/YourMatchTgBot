@@ -22,7 +22,7 @@ public class WaitingForPartnerGenderHandler : StateHandlerWithKeyboardMarkup
 
         if (user.PartnerGender != null)
         {
-            keyboardButtons.Add(new () { _localizer[user.PartnerGender.ToString()] });
+            keyboardButtons.Insert(0, new () { _localizer[user.PartnerGender.ToString()] });
         }
         
         var replyKeyboardMarkup = GetReplyKeyboard(keyboardButtons);

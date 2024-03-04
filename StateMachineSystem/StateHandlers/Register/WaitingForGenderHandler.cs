@@ -28,7 +28,7 @@ public class WaitingForGenderHandler : StateHandlerWithKeyboardMarkup
 
         if (user.Gender != null)
         {
-            keyboardButtons.Add(new () { _localizer[user.Gender.ToString()] });
+            keyboardButtons.Insert(0, new () { _localizer[user.Gender.ToString()] });
         }
         
         var replyKeyboardMarkup = GetReplyKeyboard(keyboardButtons);
