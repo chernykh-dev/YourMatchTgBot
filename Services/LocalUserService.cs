@@ -49,4 +49,9 @@ public class LocalUserService : IUserService
 
         return user;
     }
+
+    public void DeleteUser(User user)
+    {
+        _users.Remove(user);
+    }
 }

@@ -9,4 +9,6 @@ public interface IUserService
     public User? FindUserForUser(User user);
 
     public User AddUser(User user);
+    
+    public void DeleteUser(User user);
 }

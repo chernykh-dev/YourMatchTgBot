@@ -15,16 +15,18 @@ public class UserService : IUserService
     public User? GetUserById(long id)
     {
         return _context.Users
-            .Include(u => u.Interests)
-            .Include(u => u.Photos)
+            // .Include(u => u.Interests)
+            // .Include(u => u.Photos)
+            // .Include(u => u.City)
             .FirstOrDefault(u => u.Id == id);
     }
 
     public User? FindUserForUser(User user)
     {
         return _context.Users
-            .Include(u => u.Interests)
-            .Include(u => u.Photos)
+            // .Include(u => u.Interests)
+            // .Include(u => u.Photos)
+            // .Include(u => u.City)
             .FirstOrDefault(u => u.Id != user.Id);
     }
 
@@ -35,5 +37,12 @@ public class UserService : IUserService
         _context.SaveChanges();
 
         return userEntry.Entity;
+    }
+
+    public void DeleteUser(User user)
+    {
+        _context.Users.Remove(user);
+
+        _context.SaveChanges();
     }
 }
