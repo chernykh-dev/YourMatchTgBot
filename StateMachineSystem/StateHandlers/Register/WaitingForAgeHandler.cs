@@ -37,7 +37,7 @@ public class WaitingForAgeHandler : StateHandlerWithKeyboardMarkup
         
         if (user.Age != null && user.Age.ToString() != keyboardButtons[0][0])
         {
-            keyboardButtons[0].Add(user.Age.ToString());
+            keyboardButtons.Insert(0, new() { user.Age.ToString() });
         }
 
         var replyKeyboardMarkup = GetReplyKeyboard(keyboardButtons);
