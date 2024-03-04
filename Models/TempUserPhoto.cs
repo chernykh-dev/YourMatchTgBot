@@ -1,0 +1,11 @@
+using Microsoft.EntityFrameworkCore;
+
+namespace YourMatchTgBot.Models;
+
+[PrimaryKey("UserId", "PhotoFileId")]
+public class TempUserPhoto
+{
+    public long UserId { get; set; }
+    
+    public string PhotoFileId { get; set; }
+}

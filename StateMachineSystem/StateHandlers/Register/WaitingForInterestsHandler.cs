@@ -1,3 +1,4 @@
+using System.Text;
 using Microsoft.Extensions.Localization;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -27,7 +28,20 @@ public class WaitingForInterestsHandler : StateHandlerWithKeyboardMarkup
         interestsEnumerator.MoveNext();
         
         var replyKeyboardTexts = new List<List<string>>();
-        for (var i = 0; i < 5; i++)
+
+        if (user.Interests.Count > 0)
+        {
+            var userInterests = new StringBuilder();
+            foreach (var interest in user.Interests)
+            {
+                userInterests.Append(interest.Name);
+            }
+            
+            replyKeyboardTexts.Add(new () { _localizer["LeaveCurrent"] + userInterests });
+        }
+
+        var index = replyKeyboardTexts.Count;
+        for (var i = index; i < 5 + index; i++)
         {
             replyKeyboardTexts.Add(new List<string>());
             for (var j = 0; j < 3 - i % 2; j++)
@@ -36,7 +50,7 @@ public class WaitingForInterestsHandler : StateHandlerWithKeyboardMarkup
 
                 var localizedInterestName = $"{interestName} {_localizer[interestName]}";
 
-                if (user.Interests.Any(i => i.Name == interestName))
+                if (user.TemporaryInterests.Any(i => i.Interest.Name == interestName))
                     localizedInterestName = "​";
 
                 replyKeyboardTexts[i].Add(localizedInterestName);
@@ -46,24 +60,48 @@ public class WaitingForInterestsHandler : StateHandlerWithKeyboardMarkup
 
         var replyKeyboardMarkup = GetReplyKeyboard(replyKeyboardTexts);
 
-        await botClient.SendTextMessageAsync(update.Message.Chat.Id, 
-            string.Format(_localizer["WaitingInterests"], user.Interests.Count, MAX_INTERESTS_COUNT),
+        await botClient.SendTextMessageAsync(update.Message.Chat, 
+            string.Format(_localizer["WaitingInterests"], user.TemporaryInterests.Count, MAX_INTERESTS_COUNT),
             replyMarkup: replyKeyboardMarkup,
             cancellationToken: cancellationToken);
     }
 
     public override async Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user, CancellationToken cancellationToken)
     {
-        var userInterest = update.Message.Text[..2];
+        var messageText = update.Message.Text;
+
+        if (user.Interests.Count > 0 && messageText.Contains(_localizer["LeaveCurrent"]))
+        {
+            user.State = BotState.Register_WaitingForHeight;
+
+            return;
+        }
+        
+        var userInterest = messageText[..2];
 
         var interest = _interestService.GetInterestByName(userInterest);
 
         if (interest == null)
+        {
+            await botClient.SendTextMessageAsync(update.Message.Chat, 
+                _localizer["Error_IncorrectVariant"],
+                cancellationToken: cancellationToken);
+            
             return;
+        }
         
-        user.Interests.Add(interest);
+        user.TemporaryInterests.Add(new TempInterest
+        {
+            User = user,
+            Interest = interest
+        });
 
-        if (user.Interests.Count == MAX_INTERESTS_COUNT)
+        if (user.TemporaryInterests.Count == MAX_INTERESTS_COUNT)
+        {
+            user.Interests.AddRange(user.TemporaryInterests.Select(ti => ti.Interest));
+            user.TemporaryInterests.Clear();
+            
             user.State = BotState.Register_WaitingForHeight;
+        }
     }
 }

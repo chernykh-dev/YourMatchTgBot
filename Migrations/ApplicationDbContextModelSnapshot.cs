@@ -135,6 +135,34 @@ namespace YourMatchTgBot.Migrations
                         });
                 });
 
+            modelBuilder.Entity("YourMatchTgBot.Models.TempInterest", b =>
+                {
+                    b.Property<long>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("InterestId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("UserId", "InterestId");
+
+                    b.HasIndex("InterestId");
+
+                    b.ToTable("TempInterest");
+                });
+
+            modelBuilder.Entity("YourMatchTgBot.Models.TempUserPhoto", b =>
+                {
+                    b.Property<long>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("PhotoFileId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("UserId", "PhotoFileId");
+
+                    b.ToTable("TempUserPhoto");
+                });
+
             modelBuilder.Entity("YourMatchTgBot.Models.User", b =>
                 {
                     b.Property<long>("Id")
@@ -209,6 +237,32 @@ namespace YourMatchTgBot.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("YourMatchTgBot.Models.TempInterest", b =>
+                {
+                    b.HasOne("YourMatchTgBot.Models.Interest", "Interest")
+                        .WithMany()
+                        .HasForeignKey("InterestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("YourMatchTgBot.Models.User", null)
+                        .WithMany("TemporaryInterests")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Interest");
+                });
+
+            modelBuilder.Entity("YourMatchTgBot.Models.TempUserPhoto", b =>
+                {
+                    b.HasOne("YourMatchTgBot.Models.User", null)
+                        .WithMany("TemporaryPhotos")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("YourMatchTgBot.Models.User", b =>
                 {
                     b.HasOne("YourMatchTgBot.Models.City", "City")
@@ -230,6 +284,10 @@ namespace YourMatchTgBot.Migrations
             modelBuilder.Entity("YourMatchTgBot.Models.User", b =>
                 {
                     b.Navigation("Photos");
+
+                    b.Navigation("TemporaryInterests");
+
+                    b.Navigation("TemporaryPhotos");
                 });
 #pragma warning restore 612, 618
         }

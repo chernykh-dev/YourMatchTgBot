@@ -28,7 +28,11 @@ public class User
     
     public string? LanguageCode { get; set; }
 
+    public virtual List<TempInterest> TemporaryInterests { get; set; } = new();
+
     public virtual List<Interest> Interests { get; set; } = new ();
 
     public virtual List<UserPhoto> Photos { get; set; } = new ();
+    
+    public virtual List<TempUserPhoto> TemporaryPhotos { get; set; } = new ();
 }

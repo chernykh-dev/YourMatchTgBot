@@ -41,8 +41,8 @@ public class ShowProfileHandler : StateHandlerWithKeyboardMarkup
 
         if (update.Message.Text == _localizer["FillProfileAgain"])
         {
-            user.Interests.Clear();
-            user.Photos.Clear();
+            // user.Interests.Clear();
+            // user.Photos.Clear();
 
             user.State = BotState.Register_WaitingForName;
             return;
