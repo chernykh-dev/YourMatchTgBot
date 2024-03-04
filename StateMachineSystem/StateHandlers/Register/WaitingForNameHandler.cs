@@ -36,6 +36,14 @@ public class WaitingForNameHandler : StateHandlerWithKeyboardMarkup
         CancellationToken cancellationToken)
     {
         var userName = update.Message.Text;
+
+        if (userName.Length > 40)
+        {
+            await botClient.SendTextMessageAsync(update.Message.Chat, _localizer["Error_LongName"],
+                cancellationToken: cancellationToken);
+            return;
+        }
+        
         user.Name = userName;
         
         _logger.LogInformation(userName);
