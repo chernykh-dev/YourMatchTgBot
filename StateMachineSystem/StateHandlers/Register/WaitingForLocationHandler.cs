@@ -29,15 +29,40 @@ public class WaitingForLocationHandler : StateHandlerWithKeyboardMarkup
 
     public override async Task RequestToUser(ITelegramBotClient botClient, Update update, User user, CancellationToken cancellationToken)
     {
-        var replyKeyboardMarkup = GetReplyKeyboardWithLocation(_localizer);
+        if (user.City == null)
+        {
+            var replyKeyboardMarkup = GetReplyKeyboardWithLocation(_localizer);
         
-        await botClient.SendTextMessageAsync(update.Message.Chat, _localizer["WaitingLocation"],
-            replyMarkup: replyKeyboardMarkup, cancellationToken: cancellationToken);
+            await botClient.SendTextMessageAsync(update.Message.Chat, _localizer["WaitingLocation"],
+                replyMarkup: replyKeyboardMarkup, cancellationToken: cancellationToken);
+        }
+        else
+        {
+            var keyboardReply = GetReplyKeyboard(new[] { new string[] { _localizer["No"], _localizer["Yes"] } });
+
+            await botClient.SendTextMessageAsync(update.Message.Chat, string.Format(_localizer["CorrectCity"], user.City.Name),
+                replyMarkup: keyboardReply,
+                cancellationToken: cancellationToken);
+        }
     }
 
     public override async Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user, CancellationToken cancellationToken)
     {
-        string? city = null;
+        if (user.City != null)
+        {
+            if (update.Message.Text == _localizer["Yes"])
+            {
+                user.State = BotState.Register_WaitingForPhotos;
+            }
+            else if (update.Message.Text == _localizer["No"])
+            {
+                user.City = null;
+            }
+
+            return;
+        }
+        
+        string? cityName = null;
         if (update.Message.Location is { } location)
         {
             _logger.LogInformation("{Latitude} {Longitude}", location.Latitude, location.Longitude);
@@ -54,11 +79,11 @@ public class WaitingForLocationHandler : StateHandlerWithKeyboardMarkup
                                                      .Replace(',', '.') + "&lon=" +
                                                  location.Longitude.ToString(CultureInfo.InvariantCulture)
                                                      .Replace(',', '.') +
-                                                 "&zoom=10&format=jsonv2"), cancellationToken);
+                                                 "&zoom=10&format=jsonv2&accept-language=en"), cancellationToken);
                 
             if (result is JObject obj)
             {
-                city = obj["address"]["city"].Value<string>();
+                cityName = obj["address"]["city"].Value<string>();
             }
         }
         else
@@ -67,31 +92,29 @@ public class WaitingForLocationHandler : StateHandlerWithKeyboardMarkup
                 return;
 
             var result = await ParseJson(new Uri("https://nominatim.openstreetmap.org/search.php?q=" + cityString +
-                                                 "&format=jsonv2"), cancellationToken);
+                                                 "&format=jsonv2&accept-language=en"), cancellationToken);
 
             if (result is JArray arr)
             {
                 foreach (var obj in arr)
                 {
-                    if (obj["type"].Value<string>() != "city" && obj["type"].Value<string>() != "town")
+                    if (obj["type"].Value<string>() != "city" && obj["type"].Value<string>() != "town" && obj["type"].Value<string>() != "administrative")
                         continue;
                     
-                    city = obj["name"].Value<string>();
+                    cityName = obj["name"].Value<string>();
                     break;
                 }
             }
         }
 
-        if (city == null)
+        if (cityName == null)
             return;
 
-        var existingCity = _cityService.GetCityByName(city);
+        var existingCity = _cityService.GetCityByName(cityName);
 
-        user.City = existingCity ?? _cityService.AddCity(city);
+        user.City = existingCity ?? _cityService.AddCity(cityName);
         
-        _logger.LogInformation("{City}", city);
-
-        user.State = BotState.Register_WaitingForPhotos;
+        _logger.LogInformation("{City}", cityName);
     }
     
     private async Task<object> ParseJson(Uri uri, CancellationToken stoppingToken)
