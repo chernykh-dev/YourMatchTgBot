@@ -66,16 +66,23 @@ public class StateMachine
 
         Program.ChangeCultureInfo(languageCode);
 
-        if (_stateHandlers.TryGetValue(user.State, out var stateHandler))
+        try
         {
-            await stateHandler.ResponseFromUser(botClient, update, user, cancellationToken);
-            
-            // State must be updated in response handler. ^^^
-        }
+            if (_stateHandlers.TryGetValue(user.State, out var stateHandler))
+            {
+                await stateHandler.ResponseFromUser(botClient, update, user, cancellationToken);
 
-        if (_stateHandlers.TryGetValue(user.State, out stateHandler))
+                // State must be updated in response handler. ^^^
+            }
+
+            if (_stateHandlers.TryGetValue(user.State, out stateHandler))
+            {
+                await stateHandler.RequestToUser(botClient, update, user, cancellationToken);
+            }
+        }
+        catch (Telegram.Bot.Exceptions.ApiRequestException exception)
         {
-            await stateHandler.RequestToUser(botClient, update, user, cancellationToken);
+            
         }
     }
 }
@@ -96,5 +103,6 @@ public enum BotState
     Register_WaitingForDescription,
     Register_ShowProfile,
     WatchProfiles,
-    Register_WaitingForPartnerGender
+    Register_WaitingForPartnerGender,
+    Register_ShowTermsOfUse
 }
