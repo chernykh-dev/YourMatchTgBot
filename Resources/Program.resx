@@ -127,7 +127,7 @@
         <value>No</value>
     </data>
     <data name="CorrectCity" xml:space="preserve">
-        <value>Is correct city: {0}?</value>
+        <value>{0} city?</value>
     </data>
     <data name="Error_LongName" xml:space="preserve">
         <value>Long name (max 40 chars)</value>
@@ -143,5 +143,8 @@
     </data>
     <data name="Error_IncorrectVariant" xml:space="preserve">
         <value>Please select from the options</value>
+    </data>
+    <data name="LeaveCurrent" xml:space="preserve">
+        <value>Leave current: </value>
     </data>
 </root>

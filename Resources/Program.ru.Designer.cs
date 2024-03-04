@@ -212,5 +212,11 @@ namespace YourMatchTgBot.Resources {
                 return ResourceManager.GetString("Error_IncorrectVariant", resourceCulture);
             }
         }
+        
+        internal static string LeaveCurrent {
+            get {
+                return ResourceManager.GetString("LeaveCurrent", resourceCulture);
+            }
+        }
     }
 }

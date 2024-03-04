@@ -127,7 +127,7 @@
         <value>Нет</value>
     </data>
     <data name="CorrectCity" xml:space="preserve">
-        <value>Правильный город: {0}?</value>
+        <value>Город {0}?</value>
     </data>
     <data name="Error_LongName" xml:space="preserve">
         <value>Длинное имя (макс. 40 символов)</value>
@@ -143,5 +143,8 @@
     </data>
     <data name="Error_IncorrectVariant" xml:space="preserve">
         <value>Пожалуйста, выберите из вариантов</value>
+    </data>
+    <data name="LeaveCurrent" xml:space="preserve">
+        <value>Оставить текущие: </value>
     </data>
 </root>
