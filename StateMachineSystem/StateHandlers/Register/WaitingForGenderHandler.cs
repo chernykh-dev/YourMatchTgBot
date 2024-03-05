@@ -28,7 +28,7 @@ public class WaitingForGenderHandler : StateHandlerWithKeyboardMarkup
 
         if (user.Gender != null)
         {
-            keyboardButtons.Insert(0, new () { _localizer[user.Gender.ToString()] });
+            keyboardButtons.Insert(0, new () { _localizer["LeaveCurrent"] + _localizer[user.Gender.ToString()] });
         }
         
         var replyKeyboardMarkup = GetReplyKeyboard(keyboardButtons);
@@ -41,6 +41,13 @@ public class WaitingForGenderHandler : StateHandlerWithKeyboardMarkup
         CancellationToken cancellationToken)
     {
         var userInput = update.Message.Text;
+
+        if (userInput.Contains(_localizer["LeaveCurrent"]))
+        {
+            user.State = BotState.Register_WaitingForPartnerGender;
+
+            return;
+        }
 
         if (userInput == _localizer["Man"])
         {

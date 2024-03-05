@@ -21,9 +21,9 @@ public class WaitingForHeightHandler : StateHandlerWithKeyboardMarkup
 
         if (user.Height != null)
         {
-            replyKeyboardTexts.Add(new () { user.Height.ToString() });
+            replyKeyboardTexts.Add(new () { _localizer["LeaveCurrent"] + user.Height.ToString() });
             
-            replyKeyboardTexts.Add(new () { "​" });
+            // replyKeyboardTexts.Add(new () { "​" });
         }
         
         for (var i = 140; i < 211; i++)
@@ -45,6 +45,13 @@ public class WaitingForHeightHandler : StateHandlerWithKeyboardMarkup
     public override async Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user, CancellationToken cancellationToken)
     {
         var userHeightString = update.Message.Text;
+
+        if (userHeightString.Contains(_localizer["LeaveCurrent"]))
+        {
+            user.State = BotState.Register_WaitingForLocation;
+
+            return;
+        }
 
         if (!int.TryParse(userHeightString, out var userHeight))
         {

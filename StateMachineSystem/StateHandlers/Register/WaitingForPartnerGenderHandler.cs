@@ -22,7 +22,7 @@ public class WaitingForPartnerGenderHandler : StateHandlerWithKeyboardMarkup
 
         if (user.PartnerGender != null)
         {
-            keyboardButtons.Insert(0, new () { _localizer[user.PartnerGender.ToString()] });
+            keyboardButtons.Insert(0, new () { _localizer["LeaveCurrent"] + _localizer[user.PartnerGender.ToString()] });
         }
         
         var replyKeyboardMarkup = GetReplyKeyboard(keyboardButtons);
@@ -36,6 +36,13 @@ public class WaitingForPartnerGenderHandler : StateHandlerWithKeyboardMarkup
     public override async Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user, CancellationToken cancellationToken)
     {
         var userInput = update.Message.Text;
+
+        if (userInput.Contains(_localizer["LeaveCurrent"]))
+        {
+            user.State = BotState.Register_WaitingForInterests;
+
+            return;
+        }
 
         if (userInput == _localizer["Man"])
         {
