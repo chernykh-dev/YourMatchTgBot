@@ -242,5 +242,11 @@ namespace YourMatchTgBot.Resources {
                 return ResourceManager.GetString("NotAcceptTerms", resourceCulture);
             }
         }
+        
+        internal static string LeaveCurrent {
+            get {
+                return ResourceManager.GetString("LeaveCurrent", resourceCulture);
+            }
+        }
     }
 }

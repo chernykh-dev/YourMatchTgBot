@@ -159,4 +159,7 @@
     <data name="NotAcceptTerms" xml:space="preserve">
         <value>Для пользования ботом необходимо согласиться с пользовательским соглашением</value>
     </data>
+    <data name="LeaveCurrent" xml:space="preserve">
+        <value>Оставить текущее: </value>
+    </data>
 </root>

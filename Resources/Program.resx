@@ -159,4 +159,7 @@
     <data name="NotAcceptTerms" xml:space="preserve">
         <value>To use the bot you must agree to the Terms of Use</value>
     </data>
+    <data name="LeaveCurrent" xml:space="preserve">
+        <value>Leave current: </value>
+    </data>
 </root>
