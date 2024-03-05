@@ -8,9 +8,16 @@ namespace YourMatchTgBot.StateMachineSystem;
 
 public interface IStateHandler
 {
-    public Task RequestToUser(ITelegramBotClient botClient, Update update, User user,
+    // BotState NextState { get; }
+    
+    Task RequestToUser(ITelegramBotClient botClient, Update update, User user,
         CancellationToken cancellationToken);
 
-    public Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user,
+    Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user,
         CancellationToken cancellationToken);
+
+    void ChangeState(User user)
+    {
+        // user.State = NextState;
+    }
 }

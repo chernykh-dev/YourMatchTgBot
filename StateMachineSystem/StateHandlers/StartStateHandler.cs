@@ -12,6 +12,8 @@ public class StartStateHandler : IStateHandler
 {
     private ILogger<StartStateHandler> _logger;
 
+    public BotState NextState => BotState.Register_ShowTermsOfUse;
+
     public StartStateHandler(ILogger<StartStateHandler> logger)
     {
         _logger = logger;
@@ -40,5 +42,6 @@ public class StartStateHandler : IStateHandler
         _logger.LogInformation("User {{id:{chatId}}} started", chatId);
 
         user.State = BotState.Register_ShowTermsOfUse;
+        // ChangeState(user);
     }
 }

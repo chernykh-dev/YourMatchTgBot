@@ -10,6 +10,8 @@ public abstract class StateHandlerWithKeyboardMarkup : IStateHandler
 {
     private const string PIN_SYMBOL = "📍";
     
+    // public abstract BotState NextState { get; }
+    
     public abstract Task RequestToUser(ITelegramBotClient botClient, Update update, User user,
         CancellationToken cancellationToken);
 
