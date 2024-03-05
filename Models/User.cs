@@ -32,7 +32,7 @@ public class User
 
     public virtual List<Interest> Interests { get; set; } = new ();
 
-    public virtual List<UserPhoto> Photos { get; set; } = new ();
+    public virtual List<UserMedia> Photos { get; set; } = new ();
     
-    public virtual List<TempUserPhoto> TemporaryPhotos { get; set; } = new ();
+    public virtual List<TempUserMedia> TemporaryPhotos { get; set; } = new ();
 }
