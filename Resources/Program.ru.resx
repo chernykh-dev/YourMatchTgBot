@@ -100,7 +100,7 @@
         <value>Использовать фотографии профиля</value>
     </data>
     <data name="WaitingPhotos" xml:space="preserve">
-        <value>Загрузи до {0} фотографий ({1} из {0}):</value>
+        <value>Загрузи до {0} фотографий или видео ({1} из {0}):</value>
     </data>
     <data name="Continue" xml:space="preserve">
         <value>Продолжить</value>

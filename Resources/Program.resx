@@ -100,7 +100,7 @@
         <value>Use profile photos</value>
     </data>
     <data name="WaitingPhotos" xml:space="preserve">
-        <value>Upload up to {0} photos ({1} of {0}):</value>
+        <value>Upload up to {0} photos or videos ({1} of {0}):</value>
     </data>
     <data name="Continue" xml:space="preserve">
         <value>Continue</value>
