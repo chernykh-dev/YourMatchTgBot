@@ -99,19 +99,20 @@ public class WaitingForLocationHandler : StateHandlerWithKeyboardMarkup
                 foreach (var obj in arr)
                 {
                     // Вариант с областями.
+                    /*
                     if (obj["type"].Value<string>() != "city" && obj["type"].Value<string>() != "town" && 
                         obj["type"].Value<string>() != "administrative")
                         continue;
-                    
-                    // Вариант без областей.
-                    /*
-                    if (obj["type"].Value<string>() != "city" && obj["type"].Value<string>() != "town" && 
-                        obj["type"].Value<string>() == "administrative" && obj["addresstype"].Value<string>() != "city")
-                        continue;
                     */
                     
-                    cityName = obj["name"].Value<string>();
-                    break;
+                    // Вариант без областей.
+
+                    if (obj["type"].Value<string>() == "city" || obj["type"].Value<string>() == "town" ||
+                        obj["type"].Value<string>() == "administrative" && obj["addresstype"].Value<string>() == "city")
+                    {
+                        cityName = obj["name"].Value<string>();
+                        break;
+                    }
                 }
             }
         }

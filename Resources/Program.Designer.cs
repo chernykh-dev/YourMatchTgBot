@@ -248,5 +248,23 @@ namespace YourMatchTgBot.Resources {
                 return ResourceManager.GetString("LeaveCurrent", resourceCulture);
             }
         }
+        
+        internal static string PartnerMan {
+            get {
+                return ResourceManager.GetString("PartnerMan", resourceCulture);
+            }
+        }
+        
+        internal static string PartnerWomen {
+            get {
+                return ResourceManager.GetString("PartnerWomen", resourceCulture);
+            }
+        }
+        
+        internal static string PartnerAll {
+            get {
+                return ResourceManager.GetString("PartnerAll", resourceCulture);
+            }
+        }
     }
 }

@@ -18,7 +18,7 @@ public class WaitingForPartnerGenderHandler : StateHandlerWithKeyboardMarkup
 
     public override async Task RequestToUser(ITelegramBotClient botClient, Update update, User user, CancellationToken cancellationToken)
     {
-        var keyboardButtons = new List<List<string>> { new() { _localizer["Man"], _localizer["Women"] } };
+        var keyboardButtons = new List<List<string>> { new() { _localizer["PartnerMan"], _localizer["PartnerAll"], _localizer["PartnerWomen"] } };
 
         if (user.PartnerGender != null)
         {
@@ -44,11 +44,15 @@ public class WaitingForPartnerGenderHandler : StateHandlerWithKeyboardMarkup
             return;
         }
 
-        if (userInput == _localizer["Man"])
+        if (userInput == _localizer["PartnerMan"])
         {
             user.PartnerGender = Gender.Man;
         }
-        else if (userInput == _localizer["Women"])
+        else if (userInput == _localizer["PartnerAll"])
+        {
+            user.PartnerGender = Gender.All;
+        }
+        else if (userInput == _localizer["PartnerWomen"])
         {
             user.PartnerGender = Gender.Women;
         }

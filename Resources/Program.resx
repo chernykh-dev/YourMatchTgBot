@@ -19,10 +19,10 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="WaitingName" xml:space="preserve">
-        <value>Name:</value>
+        <value />
     </data>
     <data name="WaitingAge" xml:space="preserve">
-        <value>Age or Birthday ({0}):</value>
+        <value />
     </data>
     <data name="dd" xml:space="preserve">
         <value>day</value>
@@ -37,13 +37,13 @@
         <value>Cancel</value>
     </data>
     <data name="Man" xml:space="preserve">
-        <value>Men</value>
+        <value />
     </data>
     <data name="Women" xml:space="preserve">
-        <value>Women</value>
+        <value />
     </data>
     <data name="WaitingGender" xml:space="preserve">
-        <value>Gender:</value>
+        <value />
     </data>
     <data name="WaitingInterests" xml:space="preserve">
         <value>Interests ({0} of {1}):</value>
@@ -91,10 +91,10 @@
         <value>Height:</value>
     </data>
     <data name="📍" xml:space="preserve">
-        <value>Send location</value>
+        <value />
     </data>
     <data name="WaitingLocation" xml:space="preserve">
-        <value>City or location:</value>
+        <value />
     </data>
     <data name="GetPhotosFromProfile" xml:space="preserve">
         <value>Use profile photos</value>
@@ -118,7 +118,7 @@
         <value>Fill profile again</value>
     </data>
     <data name="WaitingPartnerGender" xml:space="preserve">
-        <value>Partner gender:</value>
+        <value />
     </data>
     <data name="Yes" xml:space="preserve">
         <value>Yes</value>
@@ -161,5 +161,14 @@
     </data>
     <data name="LeaveCurrent" xml:space="preserve">
         <value>Leave current: </value>
+    </data>
+    <data name="PartnerMan" xml:space="preserve">
+        <value />
+    </data>
+    <data name="PartnerWomen" xml:space="preserve">
+        <value />
+    </data>
+    <data name="PartnerAll" xml:space="preserve">
+        <value />
     </data>
 </root>

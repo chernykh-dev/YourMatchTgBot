@@ -111,12 +111,6 @@ namespace YourMatchTgBot.Resources {
             }
         }
         
-        internal static string WaitingLocation {
-            get {
-                return ResourceManager.GetString("WaitingLocation", resourceCulture);
-            }
-        }
-        
         internal static string GetPhotosFromProfile {
             get {
                 return ResourceManager.GetString("GetPhotosFromProfile", resourceCulture);
@@ -246,6 +240,30 @@ namespace YourMatchTgBot.Resources {
         internal static string LeaveCurrent {
             get {
                 return ResourceManager.GetString("LeaveCurrent", resourceCulture);
+            }
+        }
+        
+        internal static string PartnerMan {
+            get {
+                return ResourceManager.GetString("PartnerMan", resourceCulture);
+            }
+        }
+        
+        internal static string PartnerWomen {
+            get {
+                return ResourceManager.GetString("PartnerWomen", resourceCulture);
+            }
+        }
+        
+        internal static string PartnerAll {
+            get {
+                return ResourceManager.GetString("PartnerAll", resourceCulture);
+            }
+        }
+        
+        internal static string WaitingLocation {
+            get {
+                return ResourceManager.GetString("WaitingLocation", resourceCulture);
             }
         }
     }

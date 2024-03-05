@@ -19,10 +19,10 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="WaitingName" xml:space="preserve">
-        <value>Имя:</value>
+        <value>Как мне тебя называть?</value>
     </data>
     <data name="WaitingAge" xml:space="preserve">
-        <value>Возраст или дата рождения ({0}):</value>
+        <value>Сколько тебе лет?</value>
     </data>
     <data name="dd" xml:space="preserve">
         <value>день</value>
@@ -37,16 +37,16 @@
         <value>Отмена</value>
     </data>
     <data name="Women" xml:space="preserve">
-        <value>Женщина</value>
+        <value>Я девушка</value>
     </data>
     <data name="Man" xml:space="preserve">
-        <value>Мужчина</value>
+        <value>Я парень</value>
     </data>
     <data name="WaitingGender" xml:space="preserve">
-        <value>Пол:</value>
+        <value>Теперь определимся с полом</value>
     </data>
     <data name="WaitingInterests" xml:space="preserve">
-        <value>Интересы ({0} из {1}):</value>
+        <value>Выбери интересы ({0} из {1}):</value>
     </data>
     <data name="🛍" xml:space="preserve">
         <value>шоппинг</value>
@@ -91,10 +91,7 @@
         <value>Рост:</value>
     </data>
     <data name="📍" xml:space="preserve">
-        <value>Отправить локацию</value>
-    </data>
-    <data name="WaitingLocation" xml:space="preserve">
-        <value>Город или локация:</value>
+        <value>Отправить мои координаты</value>
     </data>
     <data name="GetPhotosFromProfile" xml:space="preserve">
         <value>Использовать фотографии профиля</value>
@@ -109,7 +106,7 @@
         <value>Использовать описание профиля</value>
     </data>
     <data name="WaitingDescription" xml:space="preserve">
-        <value>Описание о себе:</value>
+        <value>Расскажи о себе</value>
     </data>
     <data name="ReadyProfile" xml:space="preserve">
         <value>Заполненная анкета:</value>
@@ -118,7 +115,7 @@
         <value>Заполнить профиль заново</value>
     </data>
     <data name="WaitingPartnerGender" xml:space="preserve">
-        <value>Пол собеседника:</value>
+        <value>Кто тебе интересен?</value>
     </data>
     <data name="Yes" xml:space="preserve">
         <value>Да</value>
@@ -161,5 +158,17 @@
     </data>
     <data name="LeaveCurrent" xml:space="preserve">
         <value>Оставить текущее: </value>
+    </data>
+    <data name="PartnerMan" xml:space="preserve">
+        <value>Парни</value>
+    </data>
+    <data name="PartnerWomen" xml:space="preserve">
+        <value>Девушки</value>
+    </data>
+    <data name="PartnerAll" xml:space="preserve">
+        <value>Все</value>
+    </data>
+    <data name="WaitingLocation" xml:space="preserve">
+        <value>Из какого ты города?</value>
     </data>
 </root>
