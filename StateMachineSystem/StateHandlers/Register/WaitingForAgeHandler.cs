@@ -38,7 +38,7 @@ public class WaitingForAgeHandler : StateHandlerWithKeyboardMarkup
         if (user.Age != null)
         {
             if (keyboardButtons.Count > 0 && user.Age.ToString() != keyboardButtons[0][0] || keyboardButtons.Count == 0)
-                keyboardButtons.Insert(0, new() { user.Age.ToString() });
+                keyboardButtons.Insert(0, new() { _localizer["LeaveCurrent"] + user.Age.ToString() });
         }
 
         var replyKeyboardMarkup = GetReplyKeyboard(keyboardButtons);
@@ -53,6 +53,13 @@ public class WaitingForAgeHandler : StateHandlerWithKeyboardMarkup
         CancellationToken cancellationToken)
     {
         var userInput = update.Message.Text;
+
+        if (userInput.Contains(_localizer["LeaveCurrent"]))
+        {
+            user.State = BotState.Register_WaitingForGender;
+
+            return;
+        }
 
         uint userAge;
         if (DateTime.TryParseExact(userInput,
