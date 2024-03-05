@@ -67,6 +67,7 @@ public class WaitingForAgeHandler : StateHandlerWithKeyboardMarkup
         }
 
         uint userAge;
+        /*
         if (DateTime.TryParseExact(userInput,
                 CultureInfo.CurrentUICulture.DateTimeFormat.ShortDatePattern, 
                 null, 
@@ -75,7 +76,7 @@ public class WaitingForAgeHandler : StateHandlerWithKeyboardMarkup
         {
             userAge = (uint)(DateTime.Now.Year - userBirthDate.Year);
         }
-        else if (!uint.TryParse(userInput, out userAge))
+        else */if (!uint.TryParse(userInput, out userAge))
         {
             return;
         }
