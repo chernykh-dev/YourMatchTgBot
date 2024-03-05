@@ -49,7 +49,7 @@ public class WaitingForNameHandler : StateHandlerWithKeyboardMarkup
         
         var userName = update.Message.Text;
 
-        if (user.Name.Contains(_localizer["LeaveCurrent"]))
+        if (userName.Contains(_localizer["LeaveCurrent"]))
         {
             user.State = BotState.Register_WaitingForAge;
 

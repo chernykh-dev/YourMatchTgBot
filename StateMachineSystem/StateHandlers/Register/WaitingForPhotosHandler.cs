@@ -60,6 +60,8 @@ public class WaitingForPhotosHandler : StateHandlerWithKeyboardMarkup
             return;
         }
         
+        user.Photos.Clear();
+        
         if (update.Message.Text == _localizer["GetPhotosFromProfile"])
         {
             var photos =

@@ -33,14 +33,19 @@ public class WaitingForAgeHandler : StateHandlerWithKeyboardMarkup
         
         var userDescription = chat.Bio;
 
-        var keyboardButtons = GetGuessedUserAgeReplyKeyboard(userDescription);
+        var keyboardButtons = new List<List<string>>();
+        
+        var guessedUserAgeFound = TryGetGuessedUserAge(userDescription, out var guessedUserAge);
         
         if (user.Age != null)
         {
-            if (keyboardButtons.Count > 0 && user.Age.ToString() != keyboardButtons[0][0] || keyboardButtons.Count == 0)
-                keyboardButtons.Insert(0, new() { _localizer["LeaveCurrent"] + user.Age.ToString() });
+            if (!guessedUserAgeFound || user.Age.ToString() != guessedUserAge)
+                keyboardButtons.Add(new() { _localizer["LeaveCurrent"] + user.Age });
         }
 
+        if (guessedUserAgeFound)
+            keyboardButtons.Add(new () { guessedUserAge });
+        
         var replyKeyboardMarkup = GetReplyKeyboard(keyboardButtons);
 
         await botClient.SendTextMessageAsync(update.Message.Chat.Id,
@@ -101,34 +106,36 @@ public class WaitingForAgeHandler : StateHandlerWithKeyboardMarkup
         user.State = BotState.Register_WaitingForGender;
     }
     
-    private static List<List<string>> GetGuessedUserAgeReplyKeyboard(string? userDescription)
+    private static bool TryGetGuessedUserAge(string? userDescription, out string guessedUserAge)
     {
-        var emptyKeyboard = new List<List<string>>();
+        guessedUserAge = "";
         
         if (userDescription == null || string.IsNullOrEmpty(userDescription))
-            return emptyKeyboard;
+            return false;
         
-        string? guessedUserAge = null;
         var matches = Regex.Matches(userDescription, @"\d+");
 
         switch (matches.Count)
         {
             case <= 0:
-                return emptyKeyboard;
+                return false;
             case > 1:
                 guessedUserAge = matches[0].Value;
                 
                 matches = Regex.Matches(userDescription, 
                     @"(\d+)\s*(?:[yY][\.\/]?[oOeE]|years old|-year-old|л\.|лет|year)");
                 if (matches.Count > 0)
-                    return new () { new List<string> { matches[0].Groups[0].Value } };
+                {
+                    guessedUserAge = matches[0].Groups[0].Value;
+                    return true;
+                }
                 break;
             default:
                 guessedUserAge = matches[0].Value;
                 break;
         }
-        
-        return new () { new List<string> { guessedUserAge } };
+
+        return true;
     }
 
     private string GetLocalizedShortDatePattern()

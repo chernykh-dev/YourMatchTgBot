@@ -77,6 +77,8 @@ public class WaitingForInterestsHandler : StateHandlerWithKeyboardMarkup
             return;
         }
         
+        user.Interests.Clear();
+
         var userInterest = messageText[..2];
 
         var interest = _interestService.GetInterestByName(userInterest);
