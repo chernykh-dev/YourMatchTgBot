@@ -37,7 +37,7 @@ public class WatchProfilesHandler : StateHandlerWithKeyboardMarkup
             "Loopa",
             replyMarkup: replyKeyboardMarkup, cancellationToken: cancellationToken);
 
-        var album = _userProfileService.GetUserProfileMessage(findedUser);
+        var album = await _userProfileService.GetUserProfileMessage(findedUser, cancellationToken);
 
         await botClient.SendMediaGroupAsync(update.Message.Chat, album, cancellationToken: cancellationToken);
     }

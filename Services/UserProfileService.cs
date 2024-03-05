@@ -17,7 +17,7 @@ public class UserProfileService
         _localizer = localizer;
     }
 
-    public IEnumerable<IAlbumInputMedia> GetUserProfileMessage(User user)
+    public async Task<IEnumerable<IAlbumInputMedia>> GetUserProfileMessage(User user, CancellationToken cancellationToken)
     {
         var photos = user.Photos;
 
@@ -40,7 +40,7 @@ public class UserProfileService
             })
             .ToList();
         
-        ((InputMedia)album.First()).Caption = user.GetTextProfile(_localizer);
+        ((InputMedia)album.First()).Caption = await user.GetTextProfile(_localizer, cancellationToken);
 
         return album;
     }

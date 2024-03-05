@@ -40,7 +40,14 @@ public class WaitingForLocationHandler : StateHandlerWithKeyboardMarkup
         {
             var keyboardReply = GetReplyKeyboard(new[] { new string[] { _localizer["No"], _localizer["Yes"] } });
 
-            await botClient.SendTextMessageAsync(update.Message.Chat, string.Format(_localizer["CorrectCity"], user.City.Name),
+            var localizedCityName = user.City.Name;
+            if (user.LanguageCode == "ru")
+            {
+                localizedCityName =
+                    await TranslateService.TranslateText(localizedCityName, "en", "ru", cancellationToken);
+            }
+            
+            await botClient.SendTextMessageAsync(update.Message.Chat, string.Format(_localizer["CorrectCity"], localizedCityName),
                 replyMarkup: keyboardReply,
                 cancellationToken: cancellationToken);
         }
@@ -53,13 +60,16 @@ public class WaitingForLocationHandler : StateHandlerWithKeyboardMarkup
             if (update.Message.Text == _localizer["Yes"])
             {
                 user.State = BotState.Register_WaitingForPhotos;
+
+                return;
             }
-            else if (update.Message.Text == _localizer["No"])
+            
+            if (update.Message.Text == _localizer["No"])
             {
                 user.City = null;
-            }
 
-            return;
+                return;
+            }
         }
         
         string? cityName = null;
