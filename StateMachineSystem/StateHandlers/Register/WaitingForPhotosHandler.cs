@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using YourMatchTgBot.Models;
 using User = YourMatchTgBot.Models.User;
@@ -46,7 +47,7 @@ public class WaitingForPhotosHandler : StateHandlerWithKeyboardMarkup
 
         // TODO: Менять текст в зависимости загружал ли пользователь фото до этого.
         await botClient.SendTextMessageAsync(update.Message.Chat,
-            string.Format(_localizer["WaitingPhotos"], MAX_PHOTOS_COUNT, user.Photos.Count),
+            string.Format(_localizer["WaitingPhotos"], MAX_PHOTOS_COUNT, user.TemporaryPhotos.Count),
             replyMarkup: GetReplyKeyboard(keyboardButtons), cancellationToken: cancellationToken);
     }
 
@@ -71,7 +72,7 @@ public class WaitingForPhotosHandler : StateHandlerWithKeyboardMarkup
             // TODO: Возможно пользователь захочет добавить еще.
             foreach (var photo in photos.Photos)
             {
-                user.Photos.Add(new UserPhoto { UserId = user.Id, PhotoFileId = photo.Last().FileId });
+                user.Photos.Add(new UserMedia { UserId = user.Id, MediaFileId = photo.Last().FileId });
             }
 
             user.State = BotState.Register_WaitingForDescription;
@@ -80,22 +81,51 @@ public class WaitingForPhotosHandler : StateHandlerWithKeyboardMarkup
 
         if (update.Message.Text == _localizer["Continue"])
         {
+            user.Photos.AddRange(user.TemporaryPhotos.Select(u => new UserMedia
+                { UserId = u.UserId, MediaFileId = u.MediaFileId, MediaType = u.MediaType}));
+            user.TemporaryPhotos.Clear();
+            
             user.State = BotState.Register_WaitingForDescription;
             return;
         }
 
-        if (update.Message.Photo == null)
+        if (!update.Message.Type.Is(MessageType.Photo, MessageType.Video))
             return;
-        
-        user.TemporaryPhotos.Add(new TempUserPhoto { UserId = user.Id, PhotoFileId = update.Message.Photo.Last().FileId });
+
+        var mediaFileId = "";
+        switch (update.Message.Type)
+        {
+            case MessageType.Photo:
+                mediaFileId = update.Message.Photo.Last().FileId;
+                break;
+
+            case MessageType.Video:
+                mediaFileId = update.Message.Video.FileId;
+                break;
+
+            default:
+                break;
+        }
+
+        user.TemporaryPhotos.Add(new TempUserMedia
+            { UserId = user.Id, MediaFileId = mediaFileId, MediaType = update.Message.Type });
 
         if (user.TemporaryPhotos.Count == MAX_PHOTOS_COUNT)
         {
-            user.Photos.AddRange(user.TemporaryPhotos.Select(u => new UserPhoto
-                { UserId = u.UserId, PhotoFileId = u.PhotoFileId }));
+            user.Photos.AddRange(user.TemporaryPhotos.Select(u => new UserMedia
+                { UserId = u.UserId, MediaFileId = u.MediaFileId, MediaType = u.MediaType}));
             user.TemporaryPhotos.Clear();
 
             user.State = BotState.Register_WaitingForDescription;
         }
+    }
+}
+
+public static class EnumExt
+{
+    public static bool Is<T>(this T selfEnum, params T[] values)
+        where T : Enum
+    {
+        return values.Contains(selfEnum);
     }
 }

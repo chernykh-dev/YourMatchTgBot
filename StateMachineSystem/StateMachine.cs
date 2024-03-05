@@ -80,7 +80,11 @@ public class StateMachine
                 await stateHandler.RequestToUser(botClient, update, user, cancellationToken);
             }
         }
-        catch (Telegram.Bot.Exceptions.ApiRequestException exception)
+        /*catch (Telegram.Bot.Exceptions.ApiRequestException exception)
+        {
+            
+        }*/
+        finally
         {
             
         }

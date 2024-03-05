@@ -1,5 +1,7 @@
 using Microsoft.Extensions.Localization;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
+using YourMatchTgBot.Models;
 using User = YourMatchTgBot.Models.User;
 
 namespace YourMatchTgBot.Services;
@@ -20,10 +22,24 @@ public class UserProfileService
         var photos = user.Photos;
 
         var album = photos
-            .Select(userPhoto => new InputMediaPhoto(InputFile.FromFileId(userPhoto.PhotoFileId)))
-            .Cast<IAlbumInputMedia>()
+            .Select<UserMedia, IAlbumInputMedia>(userPhoto =>
+            {
+                var inputFile = InputFile.FromFileId(userPhoto.MediaFileId);
+                
+                switch (userPhoto.MediaType)
+                {
+                    case MessageType.Photo:
+                        return new InputMediaPhoto(inputFile);
+                    case MessageType.Video:
+                        return new InputMediaVideo(inputFile);
+                    default:
+                        break;
+                }
+                
+                return new InputMediaPhoto(InputFile.FromFileId(userPhoto.MediaFileId));
+            })
             .ToList();
-
+        
         ((InputMedia)album.First()).Caption = user.GetTextProfile(_localizer);
 
         return album;
