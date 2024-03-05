@@ -57,6 +57,9 @@ public class WaitingForAgeHandler : StateHandlerWithKeyboardMarkup
     public override async Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user,
         CancellationToken cancellationToken)
     {
+        if (update.Message.Text is null)
+            return;
+        
         var userInput = update.Message.Text;
 
         if (userInput.Contains(_localizer["LeaveCurrent"]))
