@@ -10,6 +10,12 @@ namespace YourMatchTgBot.StateMachineSystem.StateHandlers.Register;
 [StateHandler(BotState.Register_ShowTermsOfUse)]
 public class ShowTermsOfUse : StateHandlerWithKeyboardMarkup
 {
+    private const string TERMS_OF_USE_FILE_ID =
+        "BQACAgIAAxkBAAILTWXnD80D5AxAVQouW45utC58hlYYAALNRAACL1s4SxbNc_t5P2VoNAQ";
+
+    private const string PRIVACY_POLICY_FILE_ID =
+        "BQACAgIAAxkBAAILVGXnEHUKWhSWRZYzIFBGjKeKx3raAALcRAACL1s4S8BgzIfc7iSwNAQ";
+    
     private readonly IStringLocalizer<Program> _localizer;
 
     public ShowTermsOfUse(IStringLocalizer<Program> localizer)
@@ -19,16 +25,12 @@ public class ShowTermsOfUse : StateHandlerWithKeyboardMarkup
 
     public override async Task RequestToUser(ITelegramBotClient botClient, Update update, User user, CancellationToken cancellationToken)
     {
-        /*
-        var resources =
-            $"{Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"../../../"))}Resources/terms-of-use.ru.txt";
-
-        var termsText = await File.ReadAllTextAsync(resources, cancellationToken);
-        */
-        const string termsOfUseFileId = "BQACAgIAAxkBAAIJd2Xl_eQwPheem9fUMzOV9au7G6-BAALSTAACBYwxSxLP3wsUz4gcNAQ";
-
-        await botClient.SendDocumentAsync(update.Message.Chat, InputFile.FromFileId(termsOfUseFileId),
-            cancellationToken: cancellationToken);
+        await botClient.SendMediaGroupAsync(update.Message.Chat, new IAlbumInputMedia[]
+        {
+            new InputMediaDocument(InputFile.FromFileId(TERMS_OF_USE_FILE_ID)),
+            new InputMediaDocument(InputFile.FromFileId(PRIVACY_POLICY_FILE_ID))
+        }, cancellationToken: cancellationToken);
+        
 
         var keyboardButtons = new List<List<string>> { new() { _localizer["No"], _localizer["Yes"] } };
         
