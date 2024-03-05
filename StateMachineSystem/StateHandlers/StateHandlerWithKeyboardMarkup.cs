@@ -18,11 +18,16 @@ public abstract class StateHandlerWithKeyboardMarkup : IStateHandler
     public abstract Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user,
         CancellationToken cancellationToken);
 
-    protected static ReplyKeyboardMarkup GetReplyKeyboard(IEnumerable<IEnumerable<string>> buttons,
+    protected static ReplyMarkupBase GetReplyKeyboard(IEnumerable<IEnumerable<string>> buttons,
         bool resizeKeyboardMarkup = true)
     {
+        var enumerable = buttons as IEnumerable<string>[] ?? buttons.ToArray();
+        
+        if (!enumerable.Any())
+            return new ReplyKeyboardRemove();
+        
         var replyKeyboardMarkup =
-            new ReplyKeyboardMarkup(buttons.Select(row =>
+            new ReplyKeyboardMarkup(enumerable.Select(row =>
                 row.Select(buttonText => new KeyboardButton(buttonText))))
             {
                 ResizeKeyboard = resizeKeyboardMarkup
@@ -31,13 +36,16 @@ public abstract class StateHandlerWithKeyboardMarkup : IStateHandler
         return replyKeyboardMarkup;
     }
     
-    protected static ReplyKeyboardMarkup GetReplyKeyboardWithCancel(IEnumerable<IEnumerable<string>> buttons,
+    protected static ReplyMarkupBase GetReplyKeyboardWithCancel(IEnumerable<IEnumerable<string>> buttons,
         IStringLocalizer<Program> localizer,
         bool resizeKeyboardMarkup = true)
     {
         var replyKeyboardMarkup = GetReplyKeyboard(buttons, resizeKeyboardMarkup);
 
-        replyKeyboardMarkup.Keyboard = replyKeyboardMarkup.Keyboard
+        if (replyKeyboardMarkup is ReplyKeyboardRemove)
+            return replyKeyboardMarkup;
+
+        ((ReplyKeyboardMarkup)replyKeyboardMarkup).Keyboard = ((ReplyKeyboardMarkup)replyKeyboardMarkup).Keyboard
             .Append(new[] { new KeyboardButton(localizer["Cancel"]) });
 
         return replyKeyboardMarkup;
