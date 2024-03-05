@@ -42,6 +42,9 @@ public class WaitingForNameHandler : StateHandlerWithKeyboardMarkup
     public override async Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user,
         CancellationToken cancellationToken)
     {
+        if (update.Message.Text is null)
+            return;
+        
         var userName = update.Message.Text;
 
         if (userName.Length > 40)

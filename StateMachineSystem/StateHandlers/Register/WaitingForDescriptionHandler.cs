@@ -43,6 +43,9 @@ public class WaitingForDescriptionHandler : StateHandlerWithKeyboardMarkup
 
     public override async Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user, CancellationToken cancellationToken)
     {
+        if (update.Message.Text is null)
+            return;
+        
         var userDescription = update.Message.Text;
 
         if (userDescription == _localizer["LeaveCurrentDescription"])
