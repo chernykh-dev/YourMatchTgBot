@@ -77,7 +77,7 @@ public class Worker : BackgroundService
     private async Task HandleError(ITelegramBotClient botClient, Exception exception,
         CancellationToken cancellationToken)
     {
-        _logger.LogError(exception, exception.Message);
+        _logger.LogWarning(exception, exception.Message);
 
         await botClient.SendTextMessageAsync(472106852L, exception.Message, cancellationToken: cancellationToken);
     }
