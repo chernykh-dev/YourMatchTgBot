@@ -1,15 +1,15 @@
 services:
-  apppostgres:
-    image: postgres
-    restart: always
-    environment:
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=root
-      - POSTGRES_DB=ymdb
-    volumes:
-      - ./Volumes/Data/Db:/var/lib/postgresql/data
-    ports:
-      - 5432:5432
+  #apppostgres:
+  #  image: postgres
+  #  restart: always
+  #  environment:
+  #    - POSTGRES_USER=root
+  #    - POSTGRES_PASSWORD=root
+  #    - POSTGRES_DB=ymdb
+  #  volumes:
+  #    - ./Volumes/Data/Db:/var/lib/postgresql/data
+  #  ports:
+  #    - 5432:5432
         
   app:
     # image: app-bot
@@ -17,5 +17,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    depends_on:
-      - apppostgres
+    volumes:
+      - ./Db:/app/Db:rw
+    #depends_on:
+    #  - apppostgres
