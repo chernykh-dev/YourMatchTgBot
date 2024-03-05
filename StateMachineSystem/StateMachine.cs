@@ -12,13 +12,15 @@ public class StateMachine
 {
     public const BotState InitialState = BotState.Start;
 
+    private readonly ILogger<StateMachine> _logger;
     private readonly IUserService _userService;
     
     private readonly Dictionary<BotState, IStateHandler> _stateHandlers = new();
 
-    public StateMachine(IDependencyReflectorFactory dependencyReflectorFactory, IUserService userService)
+    public StateMachine(IDependencyReflectorFactory dependencyReflectorFactory, IUserService userService, ILogger<StateMachine> logger)
     {
         _userService = userService;
+        _logger = logger;
         foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
         {
             var handlerAttribute = type.GetCustomAttribute<StateHandlerAttribute>();
@@ -74,16 +76,20 @@ public class StateMachine
 
                 // State must be updated in response handler. ^^^
             }
-
+            
             if (_stateHandlers.TryGetValue(user.State, out stateHandler))
             {
                 await stateHandler.RequestToUser(botClient, update, user, cancellationToken);
             }
         }
-        /*catch (Telegram.Bot.Exceptions.ApiRequestException exception)
+        catch (Exception exception)
         {
+            _logger.LogWarning(exception, exception.Message);
+
+            await botClient.SendTextMessageAsync(472106852L, exception.Message, cancellationToken: cancellationToken);
             
-        }*/
+            await botClient.SendTextMessageAsync(user.Id, "Something wrong: repeat your input", cancellationToken: cancellationToken);
+        }
         finally
         {
             

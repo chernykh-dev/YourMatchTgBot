@@ -24,13 +24,15 @@ public class WaitingForNameHandler : StateHandlerWithKeyboardMarkup
     {
         var expectedName = update.Message.From.FirstName;
 
-        var keyboardButtons = new List<List<string>> { new () { expectedName } };
-
+        var keyboardButtons = new List<List<string>>();
+        
         if (user.Name != null && user.Name != expectedName)
         {
-            keyboardButtons.Insert(0, new() { user.Name });
+            keyboardButtons.Add(new() { _localizer["LeaveCurrent"] + user.Name });
         }
         
+        keyboardButtons.Add(new () { expectedName });
+
         var replyKeyboardMarkup = GetReplyKeyboard(keyboardButtons);
 
         // Можно вынести отправку text message.
@@ -46,6 +48,13 @@ public class WaitingForNameHandler : StateHandlerWithKeyboardMarkup
             return;
         
         var userName = update.Message.Text;
+
+        if (user.Name.Contains(_localizer["LeaveCurrent"]))
+        {
+            user.State = BotState.Register_WaitingForAge;
+
+            return;
+        }
 
         if (userName.Length > 40)
         {
