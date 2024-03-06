@@ -1,3 +1,4 @@
+using System.Text;
 using Microsoft.Extensions.Localization;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -8,6 +9,9 @@ namespace YourMatchTgBot.Services;
 
 public class UserProfileService
 {
+    private static readonly char[] TO_REPLACE_CHARS = new char[]
+        { /*'_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!'*/ };
+    
     private IUserService _userService;
     private IStringLocalizer<Program> _localizer;
 
@@ -39,8 +43,18 @@ public class UserProfileService
                 return new InputMediaPhoto(InputFile.FromFileId(userPhoto.MediaFileId));
             })
             .ToList();
-        
-        ((InputMedia)album.First()).Caption = await user.GetTextProfile(_localizer, cancellationToken);
+
+        var albumFirst = (InputMedia)album.First();
+
+        var albumCaption = new StringBuilder(await user.GetTextProfile(_localizer, cancellationToken));
+
+        foreach (var replaceChar in TO_REPLACE_CHARS)
+        {
+            albumCaption.Replace(replaceChar.ToString(), $"\\{replaceChar}");
+        }
+
+        albumFirst.Caption = albumCaption.ToString();
+        albumFirst.ParseMode = ParseMode.MarkdownV2;
 
         return album;
     }
