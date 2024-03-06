@@ -27,7 +27,7 @@ public class ShowProfileHandler : StateHandlerWithKeyboardMarkup
             _localizer["ReadyProfile"],
             replyMarkup: replyKeyboardMarkup, cancellationToken: cancellationToken);
 
-        var album = await _userProfileService.GetUserProfileMessage(user, cancellationToken);
+        var album = await _userProfileService.GetUserProfileMessage(user, cancellationToken, user.LanguageCode);
 
         await botClient.SendMediaGroupAsync(user.Id, album, cancellationToken: cancellationToken);
     }

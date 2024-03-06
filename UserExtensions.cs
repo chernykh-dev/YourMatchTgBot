@@ -6,10 +6,10 @@ namespace YourMatchTgBot;
 
 public static class UserExtensions
 {
-    public static async Task<string> GetTextProfile(this User user, IInterestService interestService, IStringLocalizer<Program> localizer, CancellationToken cancellationToken)
+    public static async Task<string> GetTextProfile(this User user, IInterestService interestService, IStringLocalizer<Program> localizer, CancellationToken cancellationToken, string languageCode)
     {
         var localizedCityName = user.City.Name;
-        if (user.LanguageCode == "ru")
+        if (languageCode == "ru")
         {
             localizedCityName = await TranslateService.TranslateText(localizedCityName, "en", "ru", cancellationToken);
         }

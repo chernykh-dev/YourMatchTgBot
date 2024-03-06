@@ -23,14 +23,18 @@ public class UserProfileService
         _interestService = interestService;
     }
 
-    public async Task<IEnumerable<IAlbumInputMedia>> GetUserProfileMessage(User user, CancellationToken cancellationToken)
+    public async Task<IEnumerable<IAlbumInputMedia>> GetUserProfileMessage(User user, CancellationToken cancellationToken, string languageCode)
     {
         var photos = user.Photos;
 
         var album = photos
             .Select<UserMedia, IAlbumInputMedia>(userPhoto =>
             {
-                var inputFile = InputFile.FromFileId(userPhoto.MediaFileId);
+                InputFile inputFile;
+                if (userPhoto.MediaFileId.Contains("://"))
+                    inputFile = InputFile.FromUri(userPhoto.MediaFileId);
+                else
+                    inputFile = InputFile.FromFileId(userPhoto.MediaFileId);
                 
                 switch (userPhoto.MediaType)
                 {
@@ -48,7 +52,7 @@ public class UserProfileService
 
         var albumFirst = (InputMedia)album.First();
 
-        var albumCaption = new StringBuilder(await user.GetTextProfile(_interestService, _localizer, cancellationToken));
+        var albumCaption = new StringBuilder(await user.GetTextProfile(_interestService, _localizer, cancellationToken, languageCode));
 
         foreach (var replaceChar in TO_REPLACE_CHARS)
         {

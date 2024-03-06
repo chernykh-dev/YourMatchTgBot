@@ -28,6 +28,7 @@ public class User
 
     public int? Height { get; set; }
 
+    public long? CityId { get; set; }
     public virtual City? City { get; set; }
     
     public virtual List<UserMedia> Photos { get; set; } = new ();

@@ -6,6 +6,7 @@ namespace YourMatchTgBot.Services;
 public class UserService : IUserService
 {
     private readonly ApplicationDbContext _context;
+    private readonly Random Random = new Random();
 
     public UserService(ApplicationDbContext context)
     {
@@ -23,11 +24,16 @@ public class UserService : IUserService
 
     public User? FindUserForUser(User user)
     {
+        var skip = (int)(Random.NextDouble() * _context.Users.Count());
+
         return _context.Users
+            .OrderBy(u => u.Id)
+            .Skip(skip)
+            .Take(1)
             .Include(u => u.Photos)
             .Include(u => u.City)
             .Include(u => u.TemporaryPhotos)
-            .FirstOrDefault(u => u.Id != user.Id);
+            .First();
     }
 
     public User AddUser(User user)
