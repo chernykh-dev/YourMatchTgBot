@@ -19,11 +19,7 @@ public class Program
             opt.ResourcesPath = "Resources";
         });
 
-        builder.Services.AddDbContext<ApplicationDbContext>(opt =>
-        {
-            // opt.UseNpgsql(builder.Configuration.GetSection("DatabaseConfig")["PostgresSQL"]);
-            opt.UseSqlite("Filename=Db/Lite.db");
-        }, contextLifetime: ServiceLifetime.Singleton);
+        builder.Services.AddDbContext<ApplicationDbContext>(ServiceLifetime.Singleton);
         
         builder.Services.AddReflectionServices();
         builder.Services.AddSingleton<ITelegramBotClient>(
