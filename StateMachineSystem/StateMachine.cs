@@ -1,6 +1,7 @@
 using System.Reflection;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using YourMatchTgBot.ReflectionExtensions;
 using YourMatchTgBot.Services;
@@ -15,7 +16,7 @@ public class StateMachine
     private readonly ILogger<StateMachine> _logger;
     private readonly IUserService _userService;
     
-    private readonly Dictionary<BotState, IStateHandler> _stateHandlers = new();
+    private readonly Dictionary<BotState, AbstractStateHandler> _stateHandlers = new();
 
     public StateMachine(IDependencyReflectorFactory dependencyReflectorFactory, IUserService userService, ILogger<StateMachine> logger)
     {
@@ -28,49 +29,57 @@ public class StateMachine
                 continue;
             
             RegisterHandler(handlerAttribute.State,
-                dependencyReflectorFactory.GetReflectedType<IStateHandler>(type, null));
+                dependencyReflectorFactory.GetReflectedType<AbstractStateHandler>(type, null));
         }
     }
 
-    private void RegisterHandler(BotState state, IStateHandler handler)
+    private void RegisterHandler(BotState state, AbstractStateHandler handler)
     {
         _stateHandlers[state] = handler;
     }
 
     public async Task ActivateState(ITelegramBotClient botClient, Update update, User user, CancellationToken cancellationToken)
     {
-        // Фильтры каждого сообщения от пользователя.
-        if (update.Message is not { } message)
-            return;
-
-        if (update.Message.Text == "/clear")
+        if (user.State == BotState.Register_WaitingForSearchPreferences && 
+            update.Type == UpdateType.CallbackQuery)
         {
-            user.State = BotState.Start;
-
-            await botClient.SendTextMessageAsync(update.Message.Chat, "Enter /start",
-                replyMarkup: new ReplyKeyboardRemove(),
-                cancellationToken: cancellationToken);
             
+        }
+        else if (update.Type == UpdateType.Message)
+        {
+            if (update.Message.Text == "/clear")
+            {
+                user.State = BotState.Start;
+
+                await botClient.SendTextMessageAsync(update.Message.Chat, "Enter /start",
+                    replyMarkup: new ReplyKeyboardRemove(),
+                    cancellationToken: cancellationToken);
+            
+                return;
+            }
+
+            var languageCode = user.LanguageCode;
+
+            if (languageCode == null)
+            {
+                languageCode = update.Message.From.LanguageCode;
+            
+                if (user.Id == 472106852L)
+                    languageCode = "ru";
+            
+                user.LanguageCode = languageCode;
+            }
+        }
+        else
+        {
             return;
         }
-
-        var languageCode = user.LanguageCode;
-
-        if (languageCode == null)
-        {
-            languageCode = update.Message.From.LanguageCode;
-            
-            if (user.Id == 472106852L)
-                languageCode = "ru";
-            
-            user.LanguageCode = languageCode;
-        }
-
-        Program.ChangeCultureInfo(languageCode);
+        
+        Program.ChangeCultureInfo(user.LanguageCode);
 
         try
         {
-            if (_stateHandlers.TryGetValue(user.State, out var stateHandler))
+            if (_stateHandlers.TryGetValue(user.State, out var stateHandler) && stateHandler.AllowedMessageTypes.Contains(update.Message.Type))
             {
                 await stateHandler.ResponseFromUser(botClient, update, user, cancellationToken);
 
@@ -114,5 +123,6 @@ public enum BotState
     Register_ShowProfile,
     WatchProfiles,
     Register_WaitingForPartnerGender,
-    Register_ShowTermsOfUse
+    Register_ShowTermsOfUse,
+    Register_WaitingForSearchPreferences
 }

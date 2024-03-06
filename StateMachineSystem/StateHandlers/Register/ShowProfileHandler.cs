@@ -1,12 +1,13 @@
 using Microsoft.Extensions.Localization;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using YourMatchTgBot.Services;
 using User = YourMatchTgBot.Models.User;
 
 namespace YourMatchTgBot.StateMachineSystem.StateHandlers.Register;
 
-[StateHandler(BotState.Register_ShowProfile)]
+[StateHandler(BotState.Register_ShowProfile, BotState.Register_WaitingForPartnerGender, MessageType.Text)]
 public class ShowProfileHandler : StateHandlerWithKeyboardMarkup
 {
     private readonly IStringLocalizer<Program> _localizer;
@@ -22,20 +23,20 @@ public class ShowProfileHandler : StateHandlerWithKeyboardMarkup
     {
         var replyKeyboardMarkup = GetReplyKeyboard(new[] { new string[] { _localizer["Continue"] }, new string[] { _localizer["FillProfileAgain"] } });
         
-        await botClient.SendTextMessageAsync(update.Message.Chat,
+        await botClient.SendTextMessageAsync(user.Id,
             _localizer["ReadyProfile"],
             replyMarkup: replyKeyboardMarkup, cancellationToken: cancellationToken);
 
         var album = await _userProfileService.GetUserProfileMessage(user, cancellationToken);
 
-        await botClient.SendMediaGroupAsync(update.Message.Chat, album, cancellationToken: cancellationToken);
+        await botClient.SendMediaGroupAsync(user.Id, album, cancellationToken: cancellationToken);
     }
 
     public override async Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user, CancellationToken cancellationToken)
     {
         if (update.Message.Text == _localizer["Continue"])
         {
-            user.State = BotState.WatchProfiles;
+            ChangeState(user);
             return;
         }
 

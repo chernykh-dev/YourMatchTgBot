@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Geolocation;
 using Microsoft.Extensions.Localization;
@@ -5,12 +6,13 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using YourMatchTgBot.Services;
 using User = YourMatchTgBot.Models.User;
 
 namespace YourMatchTgBot.StateMachineSystem.StateHandlers.Register;
 
-[StateHandler(BotState.Register_WaitingForLocation)]
+[StateHandler(BotState.Register_WaitingForLocation, BotState.Register_WaitingForPhotos, MessageType.Text, MessageType.Location)]
 public class WaitingForLocationHandler : StateHandlerWithKeyboardMarkup
 {
     private readonly IStringLocalizer<Program> _localizer;
@@ -33,7 +35,7 @@ public class WaitingForLocationHandler : StateHandlerWithKeyboardMarkup
         {
             var replyKeyboardMarkup = GetReplyKeyboardWithLocation(_localizer);
         
-            await botClient.SendTextMessageAsync(update.Message.Chat, _localizer["WaitingLocation"],
+            await botClient.SendTextMessageAsync(user.Id, _localizer["WaitingLocation"],
                 replyMarkup: replyKeyboardMarkup, cancellationToken: cancellationToken);
         }
         else
@@ -47,7 +49,7 @@ public class WaitingForLocationHandler : StateHandlerWithKeyboardMarkup
                     await TranslateService.TranslateText(localizedCityName, "en", "ru", cancellationToken);
             }
             
-            await botClient.SendTextMessageAsync(update.Message.Chat, string.Format(_localizer["CorrectCity"], localizedCityName),
+            await botClient.SendTextMessageAsync(user.Id, string.Format(_localizer["CorrectCity"], localizedCityName),
                 replyMarkup: keyboardReply,
                 cancellationToken: cancellationToken);
         }
@@ -57,14 +59,14 @@ public class WaitingForLocationHandler : StateHandlerWithKeyboardMarkup
     {
         if (user.City != null)
         {
-            if (update.Message.Text == _localizer["Yes"])
+            if (update.Message?.Text == _localizer["Yes"])
             {
-                user.State = BotState.Register_WaitingForPhotos;
+                ChangeState(user);
 
                 return;
             }
             
-            if (update.Message.Text == _localizer["No"])
+            if (update.Message?.Text == _localizer["No"])
             {
                 user.City = null;
 
@@ -73,7 +75,7 @@ public class WaitingForLocationHandler : StateHandlerWithKeyboardMarkup
         }
         
         string? cityName = null;
-        if (update.Message.Location is { } location)
+        if (update.Message?.Location is { } location)
         {
             _logger.LogInformation("{Latitude} {Longitude}", location.Latitude, location.Longitude);
 
@@ -98,11 +100,14 @@ public class WaitingForLocationHandler : StateHandlerWithKeyboardMarkup
         }
         else
         {
-            if (update.Message.Text is not { } cityString)
-                return;
-
-            var result = await ParseJson(new Uri("https://nominatim.openstreetmap.org/search.php?q=" + cityString +
-                                                 "&format=jsonv2&accept-language=en"), cancellationToken);
+            var cityString = update.Message?.Text;
+            
+            // https://nominatim.openstreetmap.org/search.php?q={city}&format=jsonv2&accept-language=en
+            var result =
+                await ParseJson(
+                    new Uri(
+                        $"https://nominatim.openstreetmap.org/search.php?q={cityString}&format=jsonv2&accept-language=en"),
+                    cancellationToken);
 
             if (result is JArray arr)
             {
@@ -117,13 +122,25 @@ public class WaitingForLocationHandler : StateHandlerWithKeyboardMarkup
                     
                     // Вариант без областей.
 
-                    if (obj["type"].Value<string>() == "city" || obj["type"].Value<string>() == "town" ||
-                        obj["type"].Value<string>() == "administrative" && obj["addresstype"].Value<string>() == "city")
+                    if (obj["type"]?.Value<string>() == "city" || obj["type"]?.Value<string>() == "town" ||
+                        obj["type"]?.Value<string>() == "administrative" && obj["addresstype"]?.Value<string>() == "city")
                     {
-                        cityName = obj["name"].Value<string>();
+                        cityName = obj["name"]?.Value<string>();
                         break;
                     }
                 }
+            }
+
+            if (cityName != null && (cityString == cityName || 
+                    cityString == await TranslateService.TranslateText(cityName, "en", "ru", cancellationToken)))
+            {
+                var existingCityByString = _cityService.GetCityByName(cityName);
+
+                user.City = existingCityByString ?? _cityService.AddCity(cityName);
+                
+                ChangeState(user);
+
+                return;
             }
         }
 
@@ -133,7 +150,7 @@ public class WaitingForLocationHandler : StateHandlerWithKeyboardMarkup
         var existingCity = _cityService.GetCityByName(cityName);
 
         user.City = existingCity ?? _cityService.AddCity(cityName);
-        
+
         _logger.LogInformation("{City}", cityName);
     }
     

@@ -1,47 +1,40 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using YourMatchTgBot.Services;
 using User = YourMatchTgBot.Models.User;
 
 namespace YourMatchTgBot.StateMachineSystem.StateHandlers;
 
-[StateHandler(BotState.Start)]
-public class StartStateHandler : IStateHandler
+[StateHandler(BotState.Start, BotState.Register_ShowTermsOfUse, MessageType.Text)]
+public class StartStateHandler : AbstractStateHandler
 {
     private ILogger<StartStateHandler> _logger;
 
-    public BotState NextState => BotState.Register_ShowTermsOfUse;
+    // protected override BotState NextState => BotState.Register_ShowTermsOfUse;
 
     public StartStateHandler(ILogger<StartStateHandler> logger)
     {
         _logger = logger;
     }
 
-    public async Task RequestToUser(ITelegramBotClient botClient, Update update, User user,
+    public override async Task RequestToUser(ITelegramBotClient botClient, Update update, User user,
         CancellationToken cancellationToken)
     {
         
     }
 
-    public async Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user,
+    public override async Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user,
         CancellationToken cancellationToken)
     {
-        if (update.Message is not { } message)
+        if (update.Message.Text != "/start")
             return;
 
-        if (update.Message.Text is not { } messageText)
-            return;
-
-        if (messageText != "/start")
-            return;
-
-        var chatId = message.Chat.Id;
+        _logger.LogInformation("User {{id:{userId}}} started", user.Id);
         
-        _logger.LogInformation("User {{id:{chatId}}} started", chatId);
-
-        user.State = BotState.Register_ShowTermsOfUse;
-        // ChangeState(user);
+        ChangeState(user);
     }
 }

@@ -1,11 +1,12 @@
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using YourMatchTgBot.Services;
 using User = YourMatchTgBot.Models.User;
 
 namespace YourMatchTgBot.StateMachineSystem.StateHandlers;
 
-[StateHandler(BotState.WatchProfiles)]
+[StateHandler(BotState.WatchProfiles, BotState.Register_ShowProfile, MessageType.Text /* TODO: Возможно + стикеры */)]
 public class WatchProfilesHandler : StateHandlerWithKeyboardMarkup
 {
     private readonly IUserService _userService;
@@ -23,7 +24,7 @@ public class WatchProfilesHandler : StateHandlerWithKeyboardMarkup
 
         if (findedUser == null)
         {
-            await botClient.SendTextMessageAsync(update.Message.Chat,
+            await botClient.SendTextMessageAsync(user.Id,
                 "Users not found", cancellationToken: cancellationToken);
 
             user.State = BotState.Register_ShowProfile;
@@ -33,13 +34,13 @@ public class WatchProfilesHandler : StateHandlerWithKeyboardMarkup
         
         var replyKeyboardMarkup = GetReplyKeyboard(new[] { new string[] { "Ok" }, new string[] { "Not Ok" } });
         
-        await botClient.SendTextMessageAsync(update.Message.Chat,
+        await botClient.SendTextMessageAsync(user.Id,
             "Loopa",
             replyMarkup: replyKeyboardMarkup, cancellationToken: cancellationToken);
 
         var album = await _userProfileService.GetUserProfileMessage(findedUser, cancellationToken);
 
-        await botClient.SendMediaGroupAsync(update.Message.Chat, album, cancellationToken: cancellationToken);
+        await botClient.SendMediaGroupAsync(user.Id, album, cancellationToken: cancellationToken);
     }
 
     public override async Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user, CancellationToken cancellationToken)

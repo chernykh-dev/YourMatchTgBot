@@ -1,12 +1,13 @@
 using Microsoft.Extensions.Localization;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using User = YourMatchTgBot.Models.User;
 
 namespace YourMatchTgBot.StateMachineSystem.StateHandlers.Register;
 
-[StateHandler(BotState.Register_WaitingForDescription)]
+[StateHandler(BotState.Register_WaitingForDescription, BotState.Register_ShowProfile, MessageType.Text)]
 public class WaitingForDescriptionHandler : StateHandlerWithKeyboardMarkup
 {
     private readonly IStringLocalizer<Program> _localizer;
@@ -25,7 +26,7 @@ public class WaitingForDescriptionHandler : StateHandlerWithKeyboardMarkup
             keyboardButtons.Add(new () { _localizer["LeaveCurrentDescription"] });
         }
         
-        var chat = await botClient.GetChatAsync(update.Message.Chat, cancellationToken: cancellationToken);
+        var chat = await botClient.GetChatAsync(user.Id, cancellationToken: cancellationToken);
         
         var userDescription = chat.Bio;
 
@@ -36,28 +37,25 @@ public class WaitingForDescriptionHandler : StateHandlerWithKeyboardMarkup
 
         var replyKeyboard = GetReplyKeyboard(keyboardButtons);
         
-        await botClient.SendTextMessageAsync(update.Message.Chat,
+        await botClient.SendTextMessageAsync(user.Id,
             _localizer["WaitingDescription"],
             replyMarkup: replyKeyboard, cancellationToken: cancellationToken);
     }
 
     public override async Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user, CancellationToken cancellationToken)
     {
-        if (update.Message.Text is null)
-            return;
-        
         var userDescription = update.Message.Text;
 
         if (userDescription == _localizer["LeaveCurrentDescription"])
         {
-            user.State = BotState.Register_ShowProfile;
+            ChangeState(user);
             
             return;
         }
         
         if (userDescription == _localizer["GetProfileDescription"])
         {
-            var chat = await botClient.GetChatAsync(update.Message.Chat, cancellationToken: cancellationToken);
+            var chat = await botClient.GetChatAsync(user.Id, cancellationToken: cancellationToken);
         
             userDescription = chat.Bio;
 
@@ -67,7 +65,7 @@ public class WaitingForDescriptionHandler : StateHandlerWithKeyboardMarkup
 
         if (userDescription.Length > 120)
         {
-            await botClient.SendTextMessageAsync(update.Message.Chat,
+            await botClient.SendTextMessageAsync(user.Id,
                 _localizer["Error_LongDescription"],
                 cancellationToken: cancellationToken);
 
@@ -75,6 +73,6 @@ public class WaitingForDescriptionHandler : StateHandlerWithKeyboardMarkup
         }
         
         user.Description = userDescription;
-        user.State = BotState.Register_ShowProfile;
+        ChangeState(user);
     }
 }

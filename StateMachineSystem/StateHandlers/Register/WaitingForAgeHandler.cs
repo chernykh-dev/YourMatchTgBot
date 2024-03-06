@@ -4,13 +4,14 @@ using System.Text.RegularExpressions;
 using Microsoft.Extensions.Localization;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using YourMatchTgBot.Services;
 using User = YourMatchTgBot.Models.User;
 
 namespace YourMatchTgBot.StateMachineSystem.StateHandlers.Register;
 
-[StateHandler(BotState.Register_WaitingForAge)]
+[StateHandler(BotState.Register_WaitingForAge, BotState.Register_WaitingForGender, MessageType.Text)]
 public class WaitingForAgeHandler : StateHandlerWithKeyboardMarkup
 {
     private readonly ILogger<WaitingForAgeHandler> _logger;
@@ -29,7 +30,7 @@ public class WaitingForAgeHandler : StateHandlerWithKeyboardMarkup
     public override async Task RequestToUser(ITelegramBotClient botClient, Update update, User user,
         CancellationToken cancellationToken)
     {
-        var chat = await botClient.GetChatAsync(update.Message.Chat, cancellationToken: cancellationToken);
+        var chat = await botClient.GetChatAsync(user.Id, cancellationToken: cancellationToken);
         
         var userDescription = chat.Bio;
 
@@ -48,7 +49,7 @@ public class WaitingForAgeHandler : StateHandlerWithKeyboardMarkup
         
         var replyKeyboardMarkup = GetReplyKeyboard(keyboardButtons);
 
-        await botClient.SendTextMessageAsync(update.Message.Chat.Id,
+        await botClient.SendTextMessageAsync(user.Id,
             string.Format(_localizer["WaitingAge"], GetLocalizedShortDatePattern()),
             replyMarkup: replyKeyboardMarkup,
             cancellationToken: cancellationToken);
@@ -57,14 +58,11 @@ public class WaitingForAgeHandler : StateHandlerWithKeyboardMarkup
     public override async Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user,
         CancellationToken cancellationToken)
     {
-        if (update.Message.Text is null)
-            return;
-        
         var userInput = update.Message.Text;
 
         if (userInput.Contains(_localizer["LeaveCurrent"]))
         {
-            user.State = BotState.Register_WaitingForGender;
+            ChangeState(user);
 
             return;
         }
@@ -86,7 +84,7 @@ public class WaitingForAgeHandler : StateHandlerWithKeyboardMarkup
 
         if (userAge > 125)
         {
-            await botClient.SendTextMessageAsync(update.Message.Chat.Id,
+            await botClient.SendTextMessageAsync(user.Id,
                 _localizer["Error_IncorrectAge"],
                 cancellationToken: cancellationToken);
 
@@ -95,7 +93,7 @@ public class WaitingForAgeHandler : StateHandlerWithKeyboardMarkup
 
         if (userAge < 16)
         {
-            await botClient.SendTextMessageAsync(update.Message.Chat.Id,
+            await botClient.SendTextMessageAsync(user.Id,
                 _localizer["Error_TooYoung"],
                 cancellationToken: cancellationToken);
 
@@ -107,7 +105,7 @@ public class WaitingForAgeHandler : StateHandlerWithKeyboardMarkup
         user.Age = (short)userAge;
         _logger.LogInformation(userAge.ToString());
 
-        user.State = BotState.Register_WaitingForGender;
+        ChangeState(user);
     }
     
     private static bool TryGetGuessedUserAge(string? userDescription, out string guessedUserAge)

@@ -6,17 +6,11 @@ using User = YourMatchTgBot.Models.User;
 
 namespace YourMatchTgBot.StateMachineSystem.StateHandlers;
 
-public abstract class StateHandlerWithKeyboardMarkup : IStateHandler
+public abstract class StateHandlerWithKeyboardMarkup : AbstractStateHandler
 {
     private const string PIN_SYMBOL = "📍";
     
     // public abstract BotState NextState { get; }
-    
-    public abstract Task RequestToUser(ITelegramBotClient botClient, Update update, User user,
-        CancellationToken cancellationToken);
-
-    public abstract Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user,
-        CancellationToken cancellationToken);
 
     protected static ReplyMarkupBase GetReplyKeyboard(IEnumerable<IEnumerable<string>> buttons,
         bool resizeKeyboardMarkup = true)

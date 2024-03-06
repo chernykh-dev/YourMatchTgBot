@@ -1,12 +1,13 @@
 using Microsoft.Extensions.Localization;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using YourMatchTgBot.Models;
 using User = YourMatchTgBot.Models.User;
 
 namespace YourMatchTgBot.StateMachineSystem.StateHandlers.Register;
 
-[StateHandler(BotState.Register_WaitingForPartnerGender)]
+[StateHandler(BotState.Register_WaitingForPartnerGender, BotState.WatchProfiles, MessageType.Text)]
 public class WaitingForPartnerGenderHandler : StateHandlerWithKeyboardMarkup
 {
     private readonly IStringLocalizer<Program> _localizer;
@@ -27,7 +28,7 @@ public class WaitingForPartnerGenderHandler : StateHandlerWithKeyboardMarkup
         
         var replyKeyboardMarkup = GetReplyKeyboard(keyboardButtons);
 
-        await botClient.SendTextMessageAsync(update.Message.Chat,
+        await botClient.SendTextMessageAsync(user.Id,
             _localizer["WaitingPartnerGender"],
             replyMarkup: replyKeyboardMarkup,
             cancellationToken: cancellationToken);
@@ -35,11 +36,11 @@ public class WaitingForPartnerGenderHandler : StateHandlerWithKeyboardMarkup
 
     public override async Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user, CancellationToken cancellationToken)
     {
-        var userInput = update.Message.Text;
+        var userInput = update.Message?.Text;
 
         if (userInput.Contains(_localizer["LeaveCurrent"]))
         {
-            user.State = BotState.Register_WaitingForInterests;
+            ChangeState(user);
 
             return;
         }
@@ -58,12 +59,12 @@ public class WaitingForPartnerGenderHandler : StateHandlerWithKeyboardMarkup
         }
         else
         {
-            await botClient.SendTextMessageAsync(update.Message.Chat, _localizer["Error_IncorrectVariant"],
+            await botClient.SendTextMessageAsync(user.Id, _localizer["Error_IncorrectVariant"],
                 cancellationToken: cancellationToken);
             
             return;
         }
 
-        user.State = BotState.Register_WaitingForInterests;
+        ChangeState(user);
     }
 }

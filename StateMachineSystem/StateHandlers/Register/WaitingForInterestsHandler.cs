@@ -1,14 +1,16 @@
+using System.Collections.Specialized;
 using System.Text;
 using Microsoft.Extensions.Localization;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using YourMatchTgBot.Models;
 using YourMatchTgBot.Services;
 using User = YourMatchTgBot.Models.User;
 
 namespace YourMatchTgBot.StateMachineSystem.StateHandlers.Register;
 
-[StateHandler(BotState.Register_WaitingForInterests)]
+// [StateHandler(BotState.Register_WaitingForInterests, BotState.Register_WaitingForHeight, MessageType.Text)]
 public class WaitingForInterestsHandler : StateHandlerWithKeyboardMarkup
 {
     private const int MAX_INTERESTS_COUNT = 3;
@@ -60,7 +62,7 @@ public class WaitingForInterestsHandler : StateHandlerWithKeyboardMarkup
 
         var replyKeyboardMarkup = GetReplyKeyboard(replyKeyboardTexts);
 
-        await botClient.SendTextMessageAsync(update.Message.Chat, 
+        await botClient.SendTextMessageAsync(user.Id, 
             string.Format(_localizer["WaitingInterests"], user.TemporaryInterests.Count, MAX_INTERESTS_COUNT),
             replyMarkup: replyKeyboardMarkup,
             cancellationToken: cancellationToken);
@@ -72,7 +74,7 @@ public class WaitingForInterestsHandler : StateHandlerWithKeyboardMarkup
 
         if (user.Interests.Count > 0 && messageText.Contains(_localizer["LeaveCurrentInterests"]))
         {
-            user.State = BotState.Register_WaitingForHeight;
+            ChangeState(user);
 
             return;
         }
@@ -85,7 +87,7 @@ public class WaitingForInterestsHandler : StateHandlerWithKeyboardMarkup
 
         if (interest == null)
         {
-            await botClient.SendTextMessageAsync(update.Message.Chat, 
+            await botClient.SendTextMessageAsync(user.Id, 
                 _localizer["Error_IncorrectVariant"],
                 cancellationToken: cancellationToken);
             
@@ -103,7 +105,7 @@ public class WaitingForInterestsHandler : StateHandlerWithKeyboardMarkup
             user.Interests.AddRange(user.TemporaryInterests.Select(ti => ti.Interest));
             user.TemporaryInterests.Clear();
             
-            user.State = BotState.Register_WaitingForHeight;
+            ChangeState(user);
         }
     }
 }

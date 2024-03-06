@@ -1,11 +1,12 @@
 using Microsoft.Extensions.Localization;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using User = YourMatchTgBot.Models.User;
 
 namespace YourMatchTgBot.StateMachineSystem.StateHandlers.Register;
 
-[StateHandler(BotState.Register_WaitingForHeight)]
+[StateHandler(BotState.Register_WaitingForHeight, BotState.Register_WaitingForLocation, MessageType.Text)]
 public class WaitingForHeightHandler : StateHandlerWithKeyboardMarkup
 {
     private readonly IStringLocalizer<Program> _localizer;
@@ -38,7 +39,7 @@ public class WaitingForHeightHandler : StateHandlerWithKeyboardMarkup
 
         var replyKeyboardMarkup = GetReplyKeyboard(replyKeyboardTexts);
 
-        await botClient.SendTextMessageAsync(update.Message.Chat, _localizer["WaitingHeight"],
+        await botClient.SendTextMessageAsync(user.Id, _localizer["WaitingHeight"],
             replyMarkup: replyKeyboardMarkup, cancellationToken: cancellationToken);
     }
 
@@ -48,14 +49,14 @@ public class WaitingForHeightHandler : StateHandlerWithKeyboardMarkup
 
         if (userHeightString.Contains(_localizer["LeaveCurrent"]))
         {
-            user.State = BotState.Register_WaitingForLocation;
+            ChangeState(user);
 
             return;
         }
 
         if (!int.TryParse(userHeightString, out var userHeight))
         {
-            await botClient.SendTextMessageAsync(update.Message.Chat, _localizer["Error_IncorrectVariant"],
+            await botClient.SendTextMessageAsync(user.Id, _localizer["Error_IncorrectVariant"],
                 cancellationToken: cancellationToken);
 
             return;
@@ -63,6 +64,6 @@ public class WaitingForHeightHandler : StateHandlerWithKeyboardMarkup
         
         user.Height = userHeight;
 
-        user.State = BotState.Register_WaitingForLocation;
+        ChangeState(user);
     }
 }

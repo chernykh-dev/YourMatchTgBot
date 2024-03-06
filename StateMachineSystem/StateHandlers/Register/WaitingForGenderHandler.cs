@@ -2,6 +2,7 @@ using System.Globalization;
 using Microsoft.Extensions.Localization;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using YourMatchTgBot.Models;
 using YourMatchTgBot.Services;
@@ -9,7 +10,7 @@ using User = YourMatchTgBot.Models.User;
 
 namespace YourMatchTgBot.StateMachineSystem.StateHandlers.Register;
 
-[StateHandler(BotState.Register_WaitingForGender)]
+[StateHandler(BotState.Register_WaitingForGender, BotState.Register_WaitingForInterests, MessageType.Text)]
 public class WaitingForGenderHandler : StateHandlerWithKeyboardMarkup
 {
     private readonly ILogger<WaitingForGenderHandler> _logger;
@@ -33,7 +34,7 @@ public class WaitingForGenderHandler : StateHandlerWithKeyboardMarkup
         
         var replyKeyboardMarkup = GetReplyKeyboard(keyboardButtons);
 
-        await botClient.SendTextMessageAsync(update.Message.Chat, _localizer["WaitingGender"], replyMarkup: replyKeyboardMarkup,
+        await botClient.SendTextMessageAsync(user.Id, _localizer["WaitingGender"], replyMarkup: replyKeyboardMarkup,
             cancellationToken: cancellationToken);
     }
 
@@ -44,7 +45,7 @@ public class WaitingForGenderHandler : StateHandlerWithKeyboardMarkup
 
         if (userInput.Contains(_localizer["LeaveCurrent"]))
         {
-            user.State = BotState.Register_WaitingForPartnerGender;
+            ChangeState(user);
 
             return;
         }
@@ -59,12 +60,12 @@ public class WaitingForGenderHandler : StateHandlerWithKeyboardMarkup
         }
         else
         {
-            await botClient.SendTextMessageAsync(update.Message.Chat, _localizer["Error_IncorrectVariant"],
+            await botClient.SendTextMessageAsync(user.Id, _localizer["Error_IncorrectVariant"],
                 cancellationToken: cancellationToken);
             
             return;
         }
 
-        user.State = BotState.Register_WaitingForPartnerGender;
+        ChangeState(user);
     }
 }

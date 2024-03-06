@@ -7,7 +7,7 @@ using User = YourMatchTgBot.Models.User;
 
 namespace YourMatchTgBot.StateMachineSystem.StateHandlers.Register;
 
-[StateHandler(BotState.Register_ShowTermsOfUse)]
+[StateHandler(BotState.Register_ShowTermsOfUse, BotState.Register_WaitingForName, MessageType.Text)]
 public class ShowTermsOfUse : StateHandlerWithKeyboardMarkup
 {
     private const string TERMS_OF_USE_FILE_ID =
@@ -45,7 +45,7 @@ public class ShowTermsOfUse : StateHandlerWithKeyboardMarkup
     {
         if (update.Message.Text == _localizer["Yes"])
         {
-            user.State = BotState.Register_WaitingForName;
+            ChangeState(user);
         }
         else if (update.Message.Text == _localizer["No"])
         {

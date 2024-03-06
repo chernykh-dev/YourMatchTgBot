@@ -1,13 +1,15 @@
+using System.Text;
 using Microsoft.Extensions.Localization;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using YourMatchTgBot.Services;
 using User = YourMatchTgBot.Models.User;
 
 namespace YourMatchTgBot.StateMachineSystem.StateHandlers.Register;
 
-[StateHandler(BotState.Register_WaitingForName)]
+[StateHandler(BotState.Register_WaitingForName, BotState.Register_WaitingForAge, MessageType.Text)]
 public class WaitingForNameHandler : StateHandlerWithKeyboardMarkup
 {
     private readonly ILogger<WaitingForNameHandler> _logger;
@@ -36,7 +38,7 @@ public class WaitingForNameHandler : StateHandlerWithKeyboardMarkup
         var replyKeyboardMarkup = GetReplyKeyboard(keyboardButtons);
 
         // Можно вынести отправку text message.
-        await botClient.SendTextMessageAsync(update.Message.Chat, _localizer["WaitingName"],
+        await botClient.SendTextMessageAsync(user.Id, _localizer["WaitingName"],
             replyMarkup: replyKeyboardMarkup,
             cancellationToken: cancellationToken);
     }
@@ -44,21 +46,18 @@ public class WaitingForNameHandler : StateHandlerWithKeyboardMarkup
     public override async Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user,
         CancellationToken cancellationToken)
     {
-        if (update.Message.Text is null)
-            return;
-        
-        var userName = update.Message.Text;
+        var userName = update.Message?.Text;
 
         if (userName.Contains(_localizer["LeaveCurrent"]))
         {
-            user.State = BotState.Register_WaitingForAge;
+            ChangeState(user);
 
             return;
         }
 
         if (userName.Length > 40)
         {
-            await botClient.SendTextMessageAsync(update.Message.Chat, _localizer["Error_LongName"],
+            await botClient.SendTextMessageAsync(user.Id, _localizer["Error_LongName"],
                 cancellationToken: cancellationToken);
             return;
         }
@@ -67,6 +66,6 @@ public class WaitingForNameHandler : StateHandlerWithKeyboardMarkup
         
         _logger.LogInformation(userName);
 
-        user.State = BotState.Register_WaitingForAge;
+        ChangeState(user);
     }
 }

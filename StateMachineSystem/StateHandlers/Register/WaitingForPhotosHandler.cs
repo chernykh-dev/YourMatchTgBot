@@ -8,7 +8,7 @@ using User = YourMatchTgBot.Models.User;
 
 namespace YourMatchTgBot.StateMachineSystem.StateHandlers.Register;
 
-[StateHandler(BotState.Register_WaitingForPhotos)]
+[StateHandler(BotState.Register_WaitingForPhotos, BotState.Register_WaitingForDescription, MessageType.Text, MessageType.Photo, MessageType.Video)]
 public class WaitingForPhotosHandler : StateHandlerWithKeyboardMarkup
 {
     private const int MAX_PHOTOS_COUNT = 6;
@@ -32,7 +32,7 @@ public class WaitingForPhotosHandler : StateHandlerWithKeyboardMarkup
             }
             
             var photos =
-                await botClient.GetUserProfilePhotosAsync(update.Message.Chat.Id, 0, MAX_PHOTOS_COUNT,
+                await botClient.GetUserProfilePhotosAsync(user.Id, 0, MAX_PHOTOS_COUNT,
                     cancellationToken: cancellationToken);
             
             if (photos.TotalCount > 0)
@@ -46,7 +46,7 @@ public class WaitingForPhotosHandler : StateHandlerWithKeyboardMarkup
         }
 
         // TODO: Менять текст в зависимости загружал ли пользователь фото до этого.
-        await botClient.SendTextMessageAsync(update.Message.Chat,
+        await botClient.SendTextMessageAsync(user.Id,
             string.Format(_localizer["WaitingPhotos"], MAX_PHOTOS_COUNT, user.TemporaryPhotos.Count),
             replyMarkup: GetReplyKeyboard(keyboardButtons), cancellationToken: cancellationToken);
     }
@@ -55,7 +55,7 @@ public class WaitingForPhotosHandler : StateHandlerWithKeyboardMarkup
     {
         if (update.Message.Text == _localizer["LeaveCurrentPhotos"])
         {
-            user.State = BotState.Register_WaitingForDescription;
+            ChangeState(user);
 
             return;
         }
@@ -65,7 +65,7 @@ public class WaitingForPhotosHandler : StateHandlerWithKeyboardMarkup
         if (update.Message.Text == _localizer["GetPhotosFromProfile"])
         {
             var photos =
-                await botClient.GetUserProfilePhotosAsync(update.Message.Chat.Id, 0, MAX_PHOTOS_COUNT,
+                await botClient.GetUserProfilePhotosAsync(user.Id, 0, MAX_PHOTOS_COUNT,
                     cancellationToken: cancellationToken);
 
             if (photos.TotalCount == 0)
@@ -77,7 +77,7 @@ public class WaitingForPhotosHandler : StateHandlerWithKeyboardMarkup
                 user.Photos.Add(new UserMedia { UserId = user.Id, MediaFileId = photo.Last().FileId });
             }
 
-            user.State = BotState.Register_WaitingForDescription;
+            ChangeState(user);
             return;
         }
 
@@ -87,7 +87,7 @@ public class WaitingForPhotosHandler : StateHandlerWithKeyboardMarkup
                 { UserId = u.UserId, MediaFileId = u.MediaFileId, MediaType = u.MediaType}));
             user.TemporaryPhotos.Clear();
             
-            user.State = BotState.Register_WaitingForDescription;
+            ChangeState(user);
             return;
         }
 
@@ -118,7 +118,7 @@ public class WaitingForPhotosHandler : StateHandlerWithKeyboardMarkup
                 { UserId = u.UserId, MediaFileId = u.MediaFileId, MediaType = u.MediaType}));
             user.TemporaryPhotos.Clear();
 
-            user.State = BotState.Register_WaitingForDescription;
+            ChangeState(user);
         }
     }
 }
