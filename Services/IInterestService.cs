@@ -11,4 +11,20 @@ public interface IInterestService
     public List<Interest> GetInterests();
 
     public Interest? GetInterestByName(string name);
+    
+    public static List<long> GetInterestsFlags(int interestsFlags)
+    {
+        var ids = new List<long>();
+
+        for (var k = 0; k < 32; k++)
+        {
+            var mask = 1 << k;
+            var maskedId = interestsFlags & mask;
+            
+            if (maskedId > 0)
+                ids.Add(maskedId);
+        }
+
+        return ids;
+    }
 }

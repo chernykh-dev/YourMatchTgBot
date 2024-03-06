@@ -13,12 +13,14 @@ public class UserProfileService
         { /*'_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!'*/ };
     
     private IUserService _userService;
+    private IInterestService _interestService;
     private IStringLocalizer<Program> _localizer;
 
-    public UserProfileService(IUserService userService, IStringLocalizer<Program> localizer)
+    public UserProfileService(IUserService userService, IStringLocalizer<Program> localizer, IInterestService interestService)
     {
         _userService = userService;
         _localizer = localizer;
+        _interestService = interestService;
     }
 
     public async Task<IEnumerable<IAlbumInputMedia>> GetUserProfileMessage(User user, CancellationToken cancellationToken)
@@ -46,7 +48,7 @@ public class UserProfileService
 
         var albumFirst = (InputMedia)album.First();
 
-        var albumCaption = new StringBuilder(await user.GetTextProfile(_localizer, cancellationToken));
+        var albumCaption = new StringBuilder(await user.GetTextProfile(_interestService, _localizer, cancellationToken));
 
         foreach (var replaceChar in TO_REPLACE_CHARS)
         {
@@ -54,7 +56,7 @@ public class UserProfileService
         }
 
         albumFirst.Caption = albumCaption.ToString();
-        albumFirst.ParseMode = ParseMode.MarkdownV2;
+        // albumFirst.ParseMode = ParseMode.MarkdownV2;
 
         return album;
     }

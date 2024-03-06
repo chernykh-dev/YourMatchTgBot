@@ -31,6 +31,7 @@ public class WaitingForInterestsHandler : StateHandlerWithKeyboardMarkup
         
         var replyKeyboardTexts = new List<List<string>>();
 
+        
         if (user.Interests.Count > 0)
         {
             var userInterests = new StringBuilder();
@@ -41,6 +42,7 @@ public class WaitingForInterestsHandler : StateHandlerWithKeyboardMarkup
             
             replyKeyboardTexts.Add(new () { _localizer["LeaveCurrentInterests"] + userInterests });
         }
+        
 
         var index = replyKeyboardTexts.Count;
         for (var i = index; i < 5 + index; i++)

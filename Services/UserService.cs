@@ -15,10 +15,8 @@ public class UserService : IUserService
     public User? GetUserById(long id)
     {
         return _context.Users
-            .Include(u => u.Interests)
             .Include(u => u.Photos)
             .Include(u => u.City)
-            .Include(u => u.TemporaryInterests)
             .Include(u => u.TemporaryPhotos)
             .FirstOrDefault(u => u.Id == id);
     }
@@ -26,10 +24,8 @@ public class UserService : IUserService
     public User? FindUserForUser(User user)
     {
         return _context.Users
-            .Include(u => u.Interests)
             .Include(u => u.Photos)
             .Include(u => u.City)
-            .Include(u => u.TemporaryInterests)
             .Include(u => u.TemporaryPhotos)
             .FirstOrDefault(u => u.Id != user.Id);
     }

@@ -33,7 +33,8 @@ public class WaitingForInterestsFlagsHandler : StateHandlerWithKeyboardMarkup
 
         if (user.InterestsFlags > 0)
         {
-            var interests = _interestService.GetInterestsByIds(GetInterestsFlags(user.InterestsFlags).ToArray());
+            var interests =
+                _interestService.GetInterestsByIds(IInterestService.GetInterestsFlags(user.InterestsFlags).ToArray());
             
             var userInterests = new StringBuilder();
             foreach (var interest in interests)
@@ -54,7 +55,7 @@ public class WaitingForInterestsFlagsHandler : StateHandlerWithKeyboardMarkup
 
                 var localizedInterestName = $"{interestName} {_localizer[interestName]}";
 
-                if (GetInterestsFlags(user.TemporaryInterestsFlags).Any(i => i == interestsEnumerator.Current.Id))
+                if (IInterestService.GetInterestsFlags(user.TemporaryInterestsFlags).Any(i => i == interestsEnumerator.Current.Id))
                     localizedInterestName = "​";
 
                 replyKeyboardTexts[i].Add(localizedInterestName);
@@ -64,8 +65,9 @@ public class WaitingForInterestsFlagsHandler : StateHandlerWithKeyboardMarkup
 
         var replyKeyboardMarkup = GetReplyKeyboard(replyKeyboardTexts);
 
-        await botClient.SendTextMessageAsync(user.Id, 
-            string.Format(_localizer["WaitingInterests"], GetInterestsFlags(user.TemporaryInterestsFlags).Count, MAX_INTERESTS_COUNT),
+        await botClient.SendTextMessageAsync(user.Id,
+            string.Format(_localizer["WaitingInterests"],
+                IInterestService.GetInterestsFlags(user.TemporaryInterestsFlags).Count, MAX_INTERESTS_COUNT),
             replyMarkup: replyKeyboardMarkup,
             cancellationToken: cancellationToken);
     }
@@ -98,28 +100,12 @@ public class WaitingForInterestsFlagsHandler : StateHandlerWithKeyboardMarkup
         
         user.TemporaryInterestsFlags |= interest.Id;
 
-        if (GetInterestsFlags(user.TemporaryInterestsFlags).Count == MAX_INTERESTS_COUNT)
+        if (IInterestService.GetInterestsFlags(user.TemporaryInterestsFlags).Count == MAX_INTERESTS_COUNT)
         {
             user.InterestsFlags = user.TemporaryInterestsFlags;
             user.TemporaryInterestsFlags = 0;
             
             ChangeState(user);
         }
-    }
-
-    private List<long> GetInterestsFlags(int interestsFlags)
-    {
-        var ids = new List<long>();
-
-        for (var k = 0; k < 32; k++)
-        {
-            var mask = 1 << k;
-            var maskedId = interestsFlags & mask;
-            
-            if (maskedId > 0)
-                ids.Add(maskedId);
-        }
-
-        return ids;
     }
 }

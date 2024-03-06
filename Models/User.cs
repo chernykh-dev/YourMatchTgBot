@@ -20,8 +20,10 @@ public class User
     
     public int TemporaryInterestsFlags { get; set; }
     
+    [Obsolete]
     public virtual List<TempInterest> TemporaryInterests { get; set; } = new();
 
+    [Obsolete]
     public virtual List<Interest> Interests { get; set; } = new ();
 
     public int? Height { get; set; }
