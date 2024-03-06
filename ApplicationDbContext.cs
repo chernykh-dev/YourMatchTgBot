@@ -5,22 +5,21 @@ namespace YourMatchTgBot;
 
 public class ApplicationDbContext : DbContext
 {
-    public DbSet<User> Users { get; set; }
-    
-    public DbSet<Interest> Interests { get; set; }
-    
-    public DbSet<City> Cities { get; set; }
+    public DbSet<User> Users { get; set; } = null!;
+
+    public DbSet<Interest> Interests { get; set; } = null!;
+
+    public DbSet<City> Cities { get; set; } = null!;
 
     public ApplicationDbContext()
     {
-        Database.EnsureCreated();
-    }
-    
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-    {
         // Database.EnsureDeleted();
-        Database.EnsureCreated();
-        // Database.Migrate();
+        // Database.EnsureCreated();
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlite("Data Source=Db/Lite.db");
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
@@ -28,17 +27,17 @@ public class ApplicationDbContext : DbContext
         builder.Entity<Interest>().HasData(
             new Interest { Id = 1, Name = "📚" }, 
             new Interest { Id = 2, Name = "🎲" },
-            new Interest { Id = 3, Name = "🚶" }, 
-            new Interest { Id = 4, Name = "💃" },
-            new Interest { Id = 5, Name = "🎞" }, 
-            new Interest { Id = 6, Name = "🏅" },
-            new Interest { Id = 7, Name = "💻" }, 
-            new Interest { Id = 8, Name = "🚙" },
-            new Interest { Id = 9, Name = "🏔" }, 
-            new Interest { Id = 10, Name = "🍲" },
-            new Interest { Id = 11, Name = "🎧" }, 
-            new Interest { Id = 12, Name = "🍳" },
-            new Interest { Id = 13, Name = "🛍" }
+            new Interest { Id = 4, Name = "🚶" }, 
+            new Interest { Id = 8, Name = "💃" },
+            new Interest { Id = 16, Name = "🎞" }, 
+            new Interest { Id = 32, Name = "🏅" },
+            new Interest { Id = 64, Name = "💻" }, 
+            new Interest { Id = 128, Name = "🚙" },
+            new Interest { Id = 256, Name = "🏔" }, 
+            new Interest { Id = 512, Name = "🍲" },
+            new Interest { Id = 1024, Name = "🎧" }, 
+            new Interest { Id = 2048, Name = "🍳" },
+            new Interest { Id = 4096, Name = "🛍" }
         );
 
         builder.Entity<City>().HasData(
