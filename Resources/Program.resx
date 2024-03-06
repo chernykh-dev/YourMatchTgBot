@@ -171,4 +171,7 @@
     <data name="PartnerAll" xml:space="preserve">
         <value />
     </data>
+    <data name="ConcreteLocation" xml:space="preserve">
+        <value />
+    </data>
 </root>

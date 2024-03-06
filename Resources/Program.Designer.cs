@@ -266,5 +266,11 @@ namespace YourMatchTgBot.Resources {
                 return ResourceManager.GetString("PartnerAll", resourceCulture);
             }
         }
+        
+        internal static string ConcreteLocation {
+            get {
+                return ResourceManager.GetString("ConcreteLocation", resourceCulture);
+            }
+        }
     }
 }

@@ -171,4 +171,7 @@
     <data name="WaitingLocation" xml:space="preserve">
         <value>Из какого ты города?</value>
     </data>
+    <data name="ConcreteLocation" xml:space="preserve">
+        <value>Уточните или расширьте местоположение</value>
+    </data>
 </root>

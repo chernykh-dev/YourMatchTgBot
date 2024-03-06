@@ -24,4 +24,18 @@ public class CityService : ICityService
 
         return cityEntry.Entity;
     }
+
+    public City AddCity(City city)
+    {
+        var cityEntry = _context.Cities.Add(city);
+
+        _context.SaveChanges();
+        
+        return cityEntry.Entity;
+    }
+
+    public City? GetCity(long cityId)
+    {
+        return _context.Cities.Find(cityId);
+    }
 }

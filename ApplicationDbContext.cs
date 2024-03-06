@@ -39,9 +39,5 @@ public class ApplicationDbContext : DbContext
             new Interest { Id = 2048, Name = "🍳" },
             new Interest { Id = 4096, Name = "🛍" }
         );
-
-        builder.Entity<City>().HasData(
-            new City { Id = 1, Name = "Belgorod" }
-        );
     }
 }
