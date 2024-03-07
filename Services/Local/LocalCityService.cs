@@ -1,6 +1,6 @@
 using YourMatchTgBot.Models;
 
-namespace YourMatchTgBot.Services;
+namespace YourMatchTgBot.Services.Local;
 
 public class LocalCityService : ICityService
 {

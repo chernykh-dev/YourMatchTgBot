@@ -9,7 +9,7 @@ using User = YourMatchTgBot.Models.User;
 
 namespace YourMatchTgBot.StateMachineSystem.StateHandlers;
 
-[StateHandler(BotState.Start, BotState.Register_ShowTermsOfUse, MessageType.Text)]
+[StateHandler(BotState.Start, BotState.Register_WaitingForLanguage, MessageType.Text)]
 public class StartStateHandler : AbstractStateHandler
 {
     private ILogger<StartStateHandler> _logger;

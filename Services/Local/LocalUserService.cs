@@ -1,7 +1,6 @@
-﻿using System.Collections;
-using YourMatchTgBot.Models;
+﻿using YourMatchTgBot.Models;
 
-namespace YourMatchTgBot.Services;
+namespace YourMatchTgBot.Services.Local;
 
 public class LocalUserService : IUserService
 {

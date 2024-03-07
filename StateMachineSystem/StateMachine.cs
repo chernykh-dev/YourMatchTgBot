@@ -124,5 +124,6 @@ public enum BotState
     WatchProfiles,
     Register_WaitingForPartnerGender,
     Register_ShowTermsOfUse,
-    Register_WaitingForSearchPreferences
+    Register_WaitingForSearchPreferences,
+    Register_WaitingForLanguage
 }

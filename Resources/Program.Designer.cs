@@ -272,5 +272,23 @@ namespace YourMatchTgBot.Resources {
                 return ResourceManager.GetString("ConcreteLocation", resourceCulture);
             }
         }
+        
+        internal static string ru {
+            get {
+                return ResourceManager.GetString("ru", resourceCulture);
+            }
+        }
+        
+        internal static string en {
+            get {
+                return ResourceManager.GetString("en", resourceCulture);
+            }
+        }
+        
+        internal static string WaitingLanguage {
+            get {
+                return ResourceManager.GetString("WaitingLanguage", resourceCulture);
+            }
+        }
     }
 }

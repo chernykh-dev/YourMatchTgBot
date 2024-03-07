@@ -174,4 +174,13 @@
     <data name="ConcreteLocation" xml:space="preserve">
         <value />
     </data>
+    <data name="ru" xml:space="preserve">
+        <value>Русский</value>
+    </data>
+    <data name="en" xml:space="preserve">
+        <value>English</value>
+    </data>
+    <data name="WaitingLanguage" xml:space="preserve">
+        <value>Lang:</value>
+    </data>
 </root>

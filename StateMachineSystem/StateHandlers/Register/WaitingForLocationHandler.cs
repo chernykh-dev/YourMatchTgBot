@@ -165,7 +165,7 @@ public class WaitingForLocationHandler : StateHandlerWithKeyboardMarkup
 
         user.City = existingCity ?? _cityService.AddCity(city);
 
-        _logger.LogInformation("{City}", city);
+        _logger.LogInformation("{City}", city.Name);
     }
     
     private async Task<object> ParseJson(Uri uri, CancellationToken stoppingToken)
