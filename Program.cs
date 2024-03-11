@@ -29,6 +29,7 @@ public class Program
         builder.Services.AddSingleton<IUserService, UserService>();
         builder.Services.AddSingleton<ICityService, CityService>();
         builder.Services.AddSingleton<UserProfileService>();
+        builder.Services.AddSingleton<UserMatchingService>();
         builder.Services.AddHostedService<Worker>();
 
         /*

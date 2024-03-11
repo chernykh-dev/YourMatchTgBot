@@ -11,18 +11,29 @@ public class WatchProfilesHandler : StateHandlerWithKeyboardMarkup
 {
     private readonly IUserService _userService;
     private readonly UserProfileService _userProfileService;
+    private readonly UserMatchingService _userMatchingService;
+    private readonly ILogger<WatchProfilesHandler> _logger;
 
-    public WatchProfilesHandler(IUserService userService, UserProfileService userProfileService)
+    private static int offset = 0;
+
+    public WatchProfilesHandler(IUserService userService, UserProfileService userProfileService, UserMatchingService userMatchingService, ILogger<WatchProfilesHandler> logger)
     {
         _userService = userService;
         _userProfileService = userProfileService;
+        _userMatchingService = userMatchingService;
+        _logger = logger;
     }
 
     public override async Task RequestToUser(ITelegramBotClient botClient, Update update, User user, CancellationToken cancellationToken)
     {
-        var findedUser = _userService.FindUserForUser(user);
+        List<User> foundUsers;
 
-        if (findedUser == null)
+        /*if (user.Id == 472106852)
+            foundUsers = _userMatchingService.MatchForUserByDistance(user);
+        else*/
+            foundUsers = _userMatchingService.MatchForUserByCity(user);
+
+        if (foundUsers.Count == 0)
         {
             await botClient.SendTextMessageAsync(user.Id,
                 "Users not found", cancellationToken: cancellationToken);
@@ -31,14 +42,20 @@ public class WatchProfilesHandler : StateHandlerWithKeyboardMarkup
 
             return;
         }
-        
+
+        var foundUser = foundUsers[offset++];
+
+        var prob = UserMatchingService.UsersProbability(user, foundUser);
+
+        _logger.LogInformation("Prob: {prob}", prob);
+
         var replyKeyboardMarkup = GetReplyKeyboard(new[] { new string[] { "Ok" }, new string[] { "Not Ok" } });
-        
+
         await botClient.SendTextMessageAsync(user.Id,
             "Loopa",
             replyMarkup: replyKeyboardMarkup, cancellationToken: cancellationToken);
 
-        var album = await _userProfileService.GetUserProfileMessage(findedUser, cancellationToken, user.LanguageCode);
+        var album = await _userProfileService.GetUserProfileMessage(foundUser, cancellationToken, user.LanguageCode);
 
         await botClient.SendMediaGroupAsync(user.Id, album, cancellationToken: cancellationToken);
     }
