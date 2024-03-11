@@ -30,6 +30,10 @@ public class User
 
     public long? CityId { get; set; }
     public virtual City? City { get; set; }
+
+    public double? Latitude { get; set; }
+
+    public double? Longitude { get; set; }
     
     public virtual List<UserMedia> Photos { get; set; } = new ();
     

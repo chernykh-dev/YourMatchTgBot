@@ -1,3 +1,4 @@
+using Geolocation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic.FileIO;
 using Telegram.Bot.Types.Enums;
@@ -12,18 +13,55 @@ public class ApplicationDbContext : DbContext
     
     private static readonly List<City> TestCities = new ()
     {
-        new City { Id = 150993485, Name = "Saint Petersburg", DisplayName = "Saint Petersburg, Northwestern Federal District, Russia" },
-        new City { Id = 171572505, Name = "Belgorod", DisplayName = "Belgorod, Belgorodsky District, Belgorod Oblast, Central Federal District, Russia" },
-        new City { Id = 171830246, Name = "Kursk", DisplayName = "Kursk, Kursk Oblast, Central Federal District, 305000, Russia" },
-        new City { Id = 171835519, Name = "Stroitel", DisplayName = "Stroitel, Yakovlevsky District, Belgorod Oblast, Central Federal District, Russia" },
-        new City { Id = 172182020, Name = "Voronezh", DisplayName = "Voronezh, Voronezh Oblast, Central Federal District, Russia" },
-        new City { Id = 174007564, Name = "Penza", DisplayName = "Penza, Penza Oblast, Volga Federal District, Russia" },
-        new City { Id = 174159235, Name = "Bryansk", DisplayName = "Bryansk, Bryansk Oblast, Central Federal District, Russia" },
-        new City { Id = 174912365, Name = "Lipetsk", DisplayName = "Lipetsk, Lipetsk Oblast, Central Federal District, 398000, Russia" },
-        new City { Id = 176023942, Name = "Izhevsk", DisplayName = "Izhevsk, Udmurtia, Volga Federal District, Russia" },
-        new City { Id = 179737040, Name = "Samara", DisplayName = "Samara, Samara Oblast, Volga Federal District, 443028, Russia" },
-        new City { Id = 206154094, Name = "Moscow", DisplayName = "Moscow, Central Federal District, Russia" }
-        
+        new City { Id = 150993485,
+            Name = "Saint Petersburg", DisplayName = "Saint Petersburg, Northwestern Federal District, Russia",
+            TranslatedName = "Санкт-Петербург", TranslatedDisplayName = "Санкт-Петербург, Северо-Западный федеральный округ, Россия"
+        },
+        new City { Id = 171488446,
+            Name = "Belgorod", DisplayName = "Belgorod, Belgorodsky District, Belgorod Oblast, Central Federal District, Russia",
+            TranslatedName = "Белгород", TranslatedDisplayName = "Белгород, Белгородский район, Белгородская область, Центральный федеральный округ, Россия"
+        },
+        new City { Id = 170978781,
+            Name = "Kursk", DisplayName = "Kursk, Kursk Oblast, Central Federal District, 305000, Russia",
+            TranslatedName = "Курск", TranslatedDisplayName = "Курск, Курская область, Центральный федеральный округ, 305000, Россия"
+        },
+        new City { Id = 172182020,
+            Name = "Voronezh", DisplayName = "Voronezh, Voronezh Oblast, Central Federal District, Russia",
+            TranslatedName = "Воронеж", TranslatedDisplayName = "Воронеж, Воронежская область, Центральный федеральный округ, Россия"
+        },
+        new City { Id = 172497247,
+            Name = "Penza", DisplayName = "Penza, Penza Oblast, Volga Federal District, Russia",
+            TranslatedName = "Пенза", TranslatedDisplayName = "Пенза, Пензенская область, Приволжский федеральный округ, Россия"
+        },
+        new City { Id = 174159235,
+            Name = "Bryansk", DisplayName = "Bryansk, Bryansk Oblast, Central Federal District, Russia",
+            TranslatedName = "Брянск", TranslatedDisplayName = "Брянск, Брянская область, Центральный федеральный округ, Россия"
+        },
+        new City { Id = 177211127,
+            Name = "Izhevsk", DisplayName = "Izhevsk, Udmurtia, Volga Federal District, Russia",
+            TranslatedName = "Ижевск", TranslatedDisplayName = "Ижевск, Удмуртия, Приволжский федеральный округ, Россия"
+        },
+        new City { Id = 179737040,
+            Name = "Samara", DisplayName = "Samara, Samara Oblast, Volga Federal District, 443028, Russia",
+            TranslatedName = "Самара", TranslatedDisplayName = "Самара, Самарская область, Приволжский федеральный округ, 443028, Россия"
+        },
+        new City { Id = 174706474,
+            Name = "Moscow", DisplayName = "Moscow, Central Federal District, Russia",
+            TranslatedName = "Москва", TranslatedDisplayName = "Москва, Центральный федеральный округ, Россия"
+        }
+    };
+
+    private static readonly Dictionary<long, Coordinate> TestCoordinates = new()
+    {
+        { 150993485, new Coordinate(59.93873200, 30.3162290) },
+        { 171488446, new Coordinate(50.59555950, 36.5873394) },
+        { 170978781, new Coordinate(51.72703565, 36.192247956921115) },
+        { 172182020, new Coordinate(51.66059820, 39.2005858) },
+        { 172497247, new Coordinate(53.19378360, 45.006741250609664) },
+        { 174159235, new Coordinate(53.24237780, 34.3668288) },
+        { 177211127, new Coordinate(56.86051745, 53.197730742455306) },
+        { 179737040, new Coordinate(53.19862700, 50.1139870) },
+        { 174706474, new Coordinate(55.75054120, 37.6174782) }
     };
 
     public DbSet<User> Users { get; set; } = null!;
@@ -91,21 +129,26 @@ public class ApplicationDbContext : DbContext
                 Enum.TryParse<Gender>(fields[4], out var userPartnerGender);
                 user.PartnerGender = userPartnerGender;
 
-                user.InterestsFlags = int.Parse(fields[5]) | int.Parse(fields[6]) | int.Parse(fields[7]);
+                user.InterestsFlags = int.Parse(fields[5]);
+                // user.InterestsFlags = int.Parse(fields[5]) | int.Parse(fields[6]) | int.Parse(fields[7]);
 
-                user.Height = int.Parse(fields[8]);
+                user.Height = int.Parse(fields[9]);
 
-                var cityId = long.Parse(fields[9]);
+                var cityId = long.Parse(fields[10]);
                 user.CityId = cityId;
+
+                var cityCoordinate = TestCoordinates[cityId];
+                user.Latitude = cityCoordinate.Latitude;
+                user.Longitude = cityCoordinate.Longitude;
 
                 builder.Entity<UserMedia>().HasData(new UserMedia
                 {
                     UserId = user.Id,
-                    MediaFileId = fields[10],
+                    MediaFileId = fields[11],
                     MediaType = MessageType.Photo
                 });
 
-                user.Description = fields[11];
+                user.Description = fields[12];
 
                 builder.Entity<User>().HasData(user);
             }

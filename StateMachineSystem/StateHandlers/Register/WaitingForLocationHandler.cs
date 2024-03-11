@@ -46,8 +46,7 @@ public class WaitingForLocationHandler : StateHandlerWithKeyboardMarkup
             var localizedCityName = user.City.DisplayName;
             if (user.LanguageCode == "ru")
             {
-                localizedCityName =
-                    await TranslateService.TranslateText(localizedCityName, "en", "ru", cancellationToken);
+                localizedCityName = user.City.TranslatedDisplayName;
             }
             
             await botClient.SendTextMessageAsync(user.Id, string.Format(_localizer["CorrectCity"], localizedCityName),
@@ -99,23 +98,38 @@ public class WaitingForLocationHandler : StateHandlerWithKeyboardMarkup
                 
             if (result is JObject obj)
             {
+                var name = obj["name"].Value<string>();
+                var displayName = obj["display_name"].Value<string>();
+
                 city = new City
                 {
                     Id = obj["place_id"].Value<long>(),
-                    Name = obj["name"].Value<string>(),
-                    DisplayName = obj["display_name"].Value<string>()
+                    Name = name,
+                    DisplayName = displayName,
+                    TranslatedName = await TranslateService.TranslateText(name, "en", "ru", cancellationToken),
+                    TranslatedDisplayName = await TranslateService.TranslateText(displayName, "en", "ru", cancellationToken)
                 };
+
+                user.Latitude = location.Latitude;
+                user.Longitude = location.Longitude;
             }
         }
         else
         {
             var cityString = update.Message?.Text;
-            
+
+            var language = TextLanguageDetectionService.DetectLanguage(cityString);
+
+            if (language is not ("en" or "ru"))
+            {
+                language = "en";
+            }
+
             // https://nominatim.openstreetmap.org/search.php?q={city}&format=jsonv2&accept-language=en
             var result =
                 await ParseJson(
                     new Uri(
-                        $"https://nominatim.openstreetmap.org/search.php?q={cityString}&format=jsonv2&accept-language=en"),
+                        $"https://nominatim.openstreetmap.org/search.php?q={cityString}&format=jsonv2&accept-language={language}"),
                     cancellationToken);
 
             if (result is JArray arr)
@@ -134,12 +148,25 @@ public class WaitingForLocationHandler : StateHandlerWithKeyboardMarkup
                     if (obj["type"]?.Value<string>() == "city" || obj["type"]?.Value<string>() == "town" ||
                         obj["type"]?.Value<string>() == "administrative" && obj["addresstype"]?.Value<string>() == "city")
                     {
+                        var name = obj["name"].Value<string>();
+                        var displayName = obj["display_name"].Value<string>();
+
                         city = new City
                         {
                             Id = obj["place_id"].Value<long>(),
-                            Name = obj["name"].Value<string>(),
-                            DisplayName = obj["display_name"].Value<string>()
+                            Name = language == "en"
+                                ? name : await TranslateService.TranslateText(name, "ru", "en", cancellationToken),
+                            DisplayName = language == "en"
+                                ? displayName : await TranslateService.TranslateText(displayName, "ru", "en", cancellationToken),
+                            TranslatedName = language == "en"
+                                ? await TranslateService.TranslateText(name, "en", "ru", cancellationToken) : name,
+                            TranslatedDisplayName = language == "en"
+                                ? await TranslateService.TranslateText(displayName, "en", "ru", cancellationToken) : displayName
                         };
+
+                        user.Latitude = obj["lat"].Value<double>();
+                        user.Longitude = obj["lon"].Value<double>();
+
                         break;
                     }
                 }
