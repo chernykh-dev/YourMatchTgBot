@@ -129,7 +129,7 @@ public class WaitingForLocationHandler : StateHandlerWithKeyboardMarkup
             var result =
                 await ParseJson(
                     new Uri(
-                        $"https://nominatim.openstreetmap.org/search.php?q={cityString}&format=jsonv2&accept-language={language}"),
+                        $"https://nominatim.openstreetmap.org/search.php?city={cityString}&format=jsonv2&accept-language={language}"),
                     cancellationToken);
 
             if (result is JArray arr)
