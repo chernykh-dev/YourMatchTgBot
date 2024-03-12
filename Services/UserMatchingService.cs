@@ -6,6 +6,8 @@ namespace YourMatchTgBot.Services;
 
 public class UserMatchingService
 {
+    public const int USERS_BY_SEARCH = 20;
+
     private readonly ApplicationDbContext _context;
     private readonly ILogger<UserMatchingService> _logger;
 
@@ -19,9 +21,10 @@ public class UserMatchingService
     {
         var users = _context.Users
             .Where(u => u.City == userForMatch.City)
-            .Take(20)
-            .Include(u => u.Photos)
-            .Include(u => u.City)
+            .Skip(userForMatch.SearchOffset)
+            .Take(USERS_BY_SEARCH)
+            // .Include(u => u.Photos)
+            // .Include(u => u.City)
             .ToList();
 
         return SortUsersFor(userForMatch, users).ToList();
@@ -30,16 +33,26 @@ public class UserMatchingService
     public List<User> MatchForUserByDistance(User userForMatch)
     {
         var users = _context.Users
-            .Where(u => GeoCalculator.GetDistance(
-                userForMatch.Latitude.Value, userForMatch.Longitude.Value,
-                u.Latitude.Value, u.Longitude.Value,
-                1, DistanceUnit.Kilometers) < 1)
-            .Take(20)
-            .Include(u => u.Photos)
-            .Include(u => u.City)
+            // .Include(u => u.City)
+            // .Include(u => u.Photos)
+            .AsEnumerable()
+            .Where(u => u.Id != userForMatch.Id)
+            .Select(u => new
+            {
+                User = u,
+                Distance = GeoCalculator.GetDistance(
+                    userForMatch.Latitude.Value, userForMatch.Longitude.Value,
+                    u.Latitude.Value, u.Longitude.Value, 1, DistanceUnit.Kilometers),
+                Probability = UsersProbability(userForMatch, u)
+            })
+            .OrderBy(u => u.Distance)
+            .ThenByDescending(u => u.Probability)
+            .Skip(userForMatch.SearchOffset)
+            .Take(USERS_BY_SEARCH)
+            .Select(u => u.User)
             .ToList();
 
-        return SortUsersFor(userForMatch, users).ToList();
+        return users;
     }
 
     private IEnumerable<User> SortUsersFor(User userForMatch, IEnumerable<User> users)

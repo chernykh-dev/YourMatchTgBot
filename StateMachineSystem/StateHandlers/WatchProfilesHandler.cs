@@ -1,3 +1,4 @@
+using Geolocation;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -14,8 +15,6 @@ public class WatchProfilesHandler : StateHandlerWithKeyboardMarkup
     private readonly UserMatchingService _userMatchingService;
     private readonly ILogger<WatchProfilesHandler> _logger;
 
-    private static int offset = 0;
-
     public WatchProfilesHandler(IUserService userService, UserProfileService userProfileService, UserMatchingService userMatchingService, ILogger<WatchProfilesHandler> logger)
     {
         _userService = userService;
@@ -26,12 +25,7 @@ public class WatchProfilesHandler : StateHandlerWithKeyboardMarkup
 
     public override async Task RequestToUser(ITelegramBotClient botClient, Update update, User user, CancellationToken cancellationToken)
     {
-        List<User> foundUsers;
-
-        /*if (user.Id == 472106852)
-            foundUsers = _userMatchingService.MatchForUserByDistance(user);
-        else*/
-            foundUsers = _userMatchingService.MatchForUserByCity(user);
+        var foundUsers = _userMatchingService.MatchForUserByDistance(user);
 
         if (foundUsers.Count == 0)
         {
@@ -43,11 +37,14 @@ public class WatchProfilesHandler : StateHandlerWithKeyboardMarkup
             return;
         }
 
-        var foundUser = foundUsers[offset++];
+        var foundUser = foundUsers[user.CurrentOffset++];
 
         var prob = UserMatchingService.UsersProbability(user, foundUser);
 
-        _logger.LogInformation("Prob: {prob}", prob);
+        _logger.LogInformation("Prob: {prob}, Distance: {distance}",
+            prob,
+            GeoCalculator.GetDistance(user.Latitude.Value, user.Longitude.Value, foundUser.Latitude.Value,
+                foundUser.Longitude.Value, 1, DistanceUnit.Kilometers));
 
         var replyKeyboardMarkup = GetReplyKeyboard(new[] { new string[] { "Ok" }, new string[] { "Not Ok" } });
 
@@ -58,6 +55,23 @@ public class WatchProfilesHandler : StateHandlerWithKeyboardMarkup
         var album = await _userProfileService.GetUserProfileMessage(foundUser, cancellationToken, user.LanguageCode);
 
         await botClient.SendMediaGroupAsync(user.Id, album, cancellationToken: cancellationToken);
+
+        // Обрабатываем последнего пользователя в серии.
+        if (user.CurrentOffset == foundUsers.Count)
+        {
+            user.CurrentOffset = 0;
+
+            // Последняя серия поиска.
+            if (foundUsers.Count < UserMatchingService.USERS_BY_SEARCH)
+            {
+                user.SearchOffset = 0;
+            }
+            // Не последняя серия поиска.
+            else
+            {
+                user.SearchOffset += UserMatchingService.USERS_BY_SEARCH;
+            }
+        }
     }
 
     public override async Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user, CancellationToken cancellationToken)

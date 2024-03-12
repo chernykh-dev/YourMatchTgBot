@@ -20,10 +20,10 @@ public class User
     
     public int TemporaryInterestsFlags { get; set; }
     
-    [Obsolete]
+    [Obsolete("Use TemporaryInterestsFlags instead")]
     public virtual List<TempInterest> TemporaryInterests { get; set; } = new();
 
-    [Obsolete]
+    [Obsolete("Use InterestsFlags instead")]
     public virtual List<Interest> Interests { get; set; } = new ();
 
     public int? Height { get; set; }
@@ -46,4 +46,9 @@ public class User
     public string? ZodiacSign { get; set; }
 
     public string? Education { get; set; }
+
+
+    public int SearchOffset { get; set; } = 0;
+
+    public int CurrentOffset { get; set; } = 0;
 }

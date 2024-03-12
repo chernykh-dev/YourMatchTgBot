@@ -1,6 +1,8 @@
 using Geolocation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic.FileIO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Telegram.Bot.Types.Enums;
 using YourMatchTgBot.Models;
 
@@ -77,7 +79,11 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlite("Data Source=Db/Lite.db");
+        optionsBuilder
+            .UseLazyLoadingProxies()
+            .UseSqlite("Data Source=Db/Lite.db");
+
+        // AddTestData(null);
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
@@ -103,55 +109,69 @@ public class ApplicationDbContext : DbContext
         AddTestData(builder);
     }
 
-    private void AddTestData(ModelBuilder builder)
+    private async void AddTestData(ModelBuilder builder)
     {
-        using (var parser = new TextFieldParser(TEST_DATA_FILE_PATH))
+        using var client = new HttpClient();
+
+        var jsonObject = (JObject)JsonConvert.DeserializeObject(await client.Send(new HttpRequestMessage()
         {
-            parser.TextFieldType = FieldType.Delimited;
-            parser.SetDelimiters(";");
+            RequestUri = new Uri("https://api.slingacademy.com/v1/sample-data/users?limit=100")
+        }).Content.ReadAsStringAsync());
 
-            // Read first row (headers).
-            parser.ReadFields();
-            
-            while (!parser.EndOfData)
+        using var parser = new TextFieldParser(TEST_DATA_FILE_PATH);
+
+        parser.TextFieldType = FieldType.Delimited;
+        parser.SetDelimiters(";");
+
+        // Read first row (headers).
+        parser.ReadFields();
+
+        var i = 0;
+        while (!parser.EndOfData)
+        {
+            var user = new User();
+
+            var fields = parser.ReadFields();
+
+            user.Id = -long.Parse(fields[0]);
+            user.Name = fields[1];
+            user.Age = GenerateRandomAge(fields[2]);
+
+            Enum.TryParse<Gender>(fields[3], out var userGender);
+            user.Gender = userGender;
+
+            var jsonGender = userGender == Gender.Man ? "male" : "female";
+
+            while (jsonObject["users"][i]["gender"].Value<string>() != jsonGender)
+                i = (i + 1) % 100;
+
+            Enum.TryParse<Gender>(fields[4], out var userPartnerGender);
+            user.PartnerGender = userPartnerGender;
+
+            user.InterestsFlags = int.Parse(fields[5]);
+            // user.InterestsFlags = int.Parse(fields[5]) | int.Parse(fields[6]) | int.Parse(fields[7]);
+
+            user.Height = int.Parse(fields[9]);
+
+            var cityId = long.Parse(fields[10]);
+            user.CityId = cityId;
+
+            var cityCoordinate = TestCoordinates[cityId];
+            user.Latitude = cityCoordinate.Latitude;
+            user.Longitude = cityCoordinate.Longitude;
+
+            builder.Entity<UserMedia>().HasData(new UserMedia
             {
-                var user = new User();
-                
-                var fields = parser.ReadFields();
+                UserId = user.Id,
+                MediaFileId = jsonObject["users"][i]["profile_picture"].Value<string>(),
+                MediaType = MessageType.Photo
+            });
 
-                user.Id = -long.Parse(fields[0]);
-                user.Name = fields[1];
-                user.Age = GenerateRandomAge(fields[2]);
-                
-                Enum.TryParse<Gender>(fields[3], out var userGender);
-                user.Gender = userGender;
-                
-                Enum.TryParse<Gender>(fields[4], out var userPartnerGender);
-                user.PartnerGender = userPartnerGender;
+            user.Description = fields[12];
 
-                user.InterestsFlags = int.Parse(fields[5]);
-                // user.InterestsFlags = int.Parse(fields[5]) | int.Parse(fields[6]) | int.Parse(fields[7]);
+            builder.Entity<User>().HasData(user);
 
-                user.Height = int.Parse(fields[9]);
-
-                var cityId = long.Parse(fields[10]);
-                user.CityId = cityId;
-
-                var cityCoordinate = TestCoordinates[cityId];
-                user.Latitude = cityCoordinate.Latitude;
-                user.Longitude = cityCoordinate.Longitude;
-
-                builder.Entity<UserMedia>().HasData(new UserMedia
-                {
-                    UserId = user.Id,
-                    MediaFileId = fields[11],
-                    MediaType = MessageType.Photo
-                });
-
-                user.Description = fields[12];
-
-                builder.Entity<User>().HasData(user);
-            }
+            i = (i + 1) % 100;
         }
     }
 
