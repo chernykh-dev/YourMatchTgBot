@@ -45,13 +45,14 @@ public class WaitingForLanguageHandler : StateHandlerWithKeyboardMarkup
             return;
         }
 
+        string languageCode;
         if (userInput == ENGLISH_ANSWER)
         {
-            user.LanguageCode = "en";
+            languageCode = "en";
         }
         else if (userInput == RUSSIAN_ANSWER)
         {
-            user.LanguageCode = "ru";
+            languageCode = "ru";
         }
         else
         {
@@ -61,7 +62,8 @@ public class WaitingForLanguageHandler : StateHandlerWithKeyboardMarkup
             return;
         }
 
-        Program.ChangeCultureInfo(user.LanguageCode);
+        user.LanguageCode = languageCode;
+        Program.ChangeCultureInfo(languageCode);
         ChangeState(user);
     }
 }

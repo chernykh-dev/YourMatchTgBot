@@ -85,6 +85,9 @@ public class StateMachine
 
                 // State must be updated in response handler. ^^^
             }
+
+            // Не понятно, почему не работает в хэндлере.
+            Program.ChangeCultureInfo(user.LanguageCode);
             
             if (_stateHandlers.TryGetValue(user.State, out stateHandler))
             {

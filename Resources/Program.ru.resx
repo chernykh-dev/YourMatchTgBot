@@ -88,7 +88,7 @@
         <value>книги</value>
     </data>
     <data name="WaitingHeight" xml:space="preserve">
-        <value>Рост:</value>
+        <value>Какой у тебя рост?</value>
     </data>
     <data name="📍" xml:space="preserve">
         <value>Отправить мои координаты</value>
@@ -124,7 +124,7 @@
         <value>Нет</value>
     </data>
     <data name="CorrectCity" xml:space="preserve">
-        <value>Город {0}?</value>
+        <value>{0}?</value>
     </data>
     <data name="Error_LongName" xml:space="preserve">
         <value>Длинное имя (макс. 40 символов)</value>
@@ -136,10 +136,10 @@
         <value>Ты слишком молод, приходи позже</value>
     </data>
     <data name="Error_IncorrectAge" xml:space="preserve">
-        <value>Неверный ввод, возраст должен быть не более 125</value>
+        <value>Укажи возраст не более 125</value>
     </data>
     <data name="Error_IncorrectVariant" xml:space="preserve">
-        <value>Пожалуйста, выберите из вариантов</value>
+        <value>Выбери из вариантов</value>
     </data>
     <data name="LeaveCurrentInterests" xml:space="preserve">
         <value>Оставить текущие: </value>

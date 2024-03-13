@@ -19,10 +19,10 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="WaitingName" xml:space="preserve">
-        <value />
+        <value>What should I call you?</value>
     </data>
     <data name="WaitingAge" xml:space="preserve">
-        <value />
+        <value>How old are you?</value>
     </data>
     <data name="dd" xml:space="preserve">
         <value>day</value>
@@ -37,16 +37,16 @@
         <value>Cancel</value>
     </data>
     <data name="Man" xml:space="preserve">
-        <value />
+        <value>I'm a boy</value>
     </data>
     <data name="Women" xml:space="preserve">
-        <value />
+        <value>I'm a girl</value>
     </data>
     <data name="WaitingGender" xml:space="preserve">
-        <value />
+        <value>Now let's decide on the gender</value>
     </data>
     <data name="WaitingInterests" xml:space="preserve">
-        <value>Interests ({0} of {1}):</value>
+        <value>Choose interests ({0} from {1}):</value>
     </data>
     <data name="📚" xml:space="preserve">
         <value>books</value>
@@ -73,7 +73,7 @@
         <value>cars</value>
     </data>
     <data name="🍲" xml:space="preserve">
-        <value>food</value>
+        <value>meal</value>
     </data>
     <data name="🎧" xml:space="preserve">
         <value>music</value>
@@ -88,13 +88,13 @@
         <value>travelling</value>
     </data>
     <data name="WaitingHeight" xml:space="preserve">
-        <value>Height:</value>
+        <value>How tall are you?</value>
     </data>
     <data name="📍" xml:space="preserve">
-        <value />
+        <value>Send my coordinates</value>
     </data>
     <data name="WaitingLocation" xml:space="preserve">
-        <value />
+        <value>What city are you from?</value>
     </data>
     <data name="GetPhotosFromProfile" xml:space="preserve">
         <value>Use profile photos</value>
@@ -109,16 +109,16 @@
         <value>Use profile description</value>
     </data>
     <data name="WaitingDescription" xml:space="preserve">
-        <value>Bio:</value>
+        <value>Tell me about yourself</value>
     </data>
     <data name="ReadyProfile" xml:space="preserve">
-        <value>Ready profile:</value>
+        <value>Completed profile:</value>
     </data>
     <data name="FillProfileAgain" xml:space="preserve">
         <value>Fill profile again</value>
     </data>
     <data name="WaitingPartnerGender" xml:space="preserve">
-        <value />
+        <value>Who are you interested in?</value>
     </data>
     <data name="Yes" xml:space="preserve">
         <value>Yes</value>
@@ -127,7 +127,7 @@
         <value>No</value>
     </data>
     <data name="CorrectCity" xml:space="preserve">
-        <value>{0} city?</value>
+        <value>{0}?</value>
     </data>
     <data name="Error_LongName" xml:space="preserve">
         <value>Long name (max 40 chars)</value>
@@ -139,10 +139,10 @@
         <value>You're too young, come back later</value>
     </data>
     <data name="Error_IncorrectAge" xml:space="preserve">
-        <value>Incorrect input, age must be no more 125</value>
+        <value>Specify the age of no more than 125</value>
     </data>
     <data name="Error_IncorrectVariant" xml:space="preserve">
-        <value>Please select from the options</value>
+        <value>Choose from the options</value>
     </data>
     <data name="LeaveCurrentInterests" xml:space="preserve">
         <value>Leave current: </value>
@@ -154,25 +154,25 @@
         <value>Leave current</value>
     </data>
     <data name="AcceptTerms" xml:space="preserve">
-        <value>Are you accept Terms of Use?</value>
+        <value>Do you accept the user agreement?</value>
     </data>
     <data name="NotAcceptTerms" xml:space="preserve">
-        <value>To use the bot you must agree to the Terms of Use</value>
+        <value>To use the bot, you must agree to the user agreement</value>
     </data>
     <data name="LeaveCurrent" xml:space="preserve">
         <value>Leave current: </value>
     </data>
     <data name="PartnerMan" xml:space="preserve">
-        <value />
+        <value>Boys</value>
     </data>
     <data name="PartnerWomen" xml:space="preserve">
-        <value />
+        <value>Girls</value>
     </data>
     <data name="PartnerAll" xml:space="preserve">
-        <value />
+        <value>All</value>
     </data>
     <data name="ConcreteLocation" xml:space="preserve">
-        <value />
+        <value>Specify or expand the location</value>
     </data>
     <data name="ru" xml:space="preserve">
         <value>Русский</value>
@@ -181,6 +181,6 @@
         <value>English</value>
     </data>
     <data name="WaitingLanguage" xml:space="preserve">
-        <value>Lang:</value>
+        <value>What language should I use to communicate with you?</value>
     </data>
 </root>
