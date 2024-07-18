@@ -81,7 +81,8 @@ public class ApplicationDbContext : DbContext
     {
         optionsBuilder
             .UseLazyLoadingProxies()
-            .UseSqlite("Data Source=Db/Lite.db");
+            // .UseSqlite("Data Source=Db/Lite.db");
+            .UseNpgsql("Host=localhost;Port=5432;Database=ymdb;Username=root;Password=root");
 
         // AddTestData(null);
     }
