@@ -20,16 +20,19 @@ public class Program
         });
 
         builder.Services.AddDbContext<ApplicationDbContext>(ServiceLifetime.Singleton);
-        
+
+        var botClient = new TelegramBotClient("6840671790:AAFa-HhMJZXiNL7KLqY1enC4A87rUOj_w-g");
+        botClient.Timeout = TimeSpan.FromMinutes(5);
+
         builder.Services.AddReflectionServices();
-        builder.Services.AddSingleton<ITelegramBotClient>(
-            new TelegramBotClient("6840671790:AAFa-HhMJZXiNL7KLqY1enC4A87rUOj_w-g"));
+        builder.Services.AddSingleton<ITelegramBotClient>(botClient);
         builder.Services.AddSingleton<StateMachine>();
         builder.Services.AddSingleton<IInterestService, InterestService>();
         builder.Services.AddSingleton<IUserService, UserService>();
         builder.Services.AddSingleton<ICityService, CityService>();
         builder.Services.AddSingleton<UserProfileService>();
         builder.Services.AddSingleton<UserMatchingService>();
+        builder.Services.AddSingleton<MatchesService>();
         builder.Services.AddHostedService<Worker>();
 
         /*

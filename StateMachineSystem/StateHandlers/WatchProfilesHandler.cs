@@ -1,81 +1,225 @@
+using System.Diagnostics;
 using Geolocation;
+using Microsoft.Extensions.Localization;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using YourMatchTgBot.Models;
 using YourMatchTgBot.Services;
 using User = YourMatchTgBot.Models.User;
 
 namespace YourMatchTgBot.StateMachineSystem.StateHandlers;
 
-[StateHandler(BotState.WatchProfiles, BotState.Register_ShowProfile, MessageType.Text /* TODO: Возможно + стикеры */)]
+[StateHandler(BotState.WatchProfiles, BotState.WatchProfiles, MessageType.Text /* TODO: Возможно + стикеры */)]
 public class WatchProfilesHandler : StateHandlerWithKeyboardMarkup
 {
     private readonly IUserService _userService;
     private readonly UserProfileService _userProfileService;
     private readonly UserMatchingService _userMatchingService;
+    private readonly MatchesService _matchesService;
     private readonly ILogger<WatchProfilesHandler> _logger;
+    private readonly IStringLocalizer<Program> _localizer;
+    private readonly ApplicationDbContext _context;
 
-    public WatchProfilesHandler(IUserService userService, UserProfileService userProfileService, UserMatchingService userMatchingService, ILogger<WatchProfilesHandler> logger)
+    public WatchProfilesHandler(IUserService userService, UserProfileService userProfileService, UserMatchingService userMatchingService, ILogger<WatchProfilesHandler> logger, IStringLocalizer<Program> localizer, MatchesService matchesService, ApplicationDbContext context)
     {
         _userService = userService;
         _userProfileService = userProfileService;
         _userMatchingService = userMatchingService;
         _logger = logger;
+        _localizer = localizer;
+        _matchesService = matchesService;
+        _context = context;
     }
 
     public override async Task RequestToUser(ITelegramBotClient botClient, Update update, User user, CancellationToken cancellationToken)
     {
-        var foundUsers = _userMatchingService.MatchForUserByDistance(user);
+        var matches = _matchesService.MatchedForUser(user);
 
-        if (foundUsers.Count == 0)
+        if (matches.Count > 0)
         {
-            await botClient.SendTextMessageAsync(user.Id,
-                "Users not found", cancellationToken: cancellationToken);
+            var replyKeyboardMarkup = GetLikesReplyKeyboard();
 
+            await botClient.SendTextMessageAsync(user.Id,
+                _localizer["WaitingAnswerForMatch"],
+                replyMarkup: replyKeyboardMarkup, cancellationToken: cancellationToken);
+
+            var matchedAlbum =
+                await _userProfileService.GetUserProfileMessage(matches[0].MatchFromUser, cancellationToken,
+                    user.LanguageCode);
+
+            await botClient.SendMediaGroupAsync(user.Id, matchedAlbum, cancellationToken: cancellationToken);
+
+            // user.CurrentUserForMatch = matches[0].MatchFromUser;
+            user.CurrentUserForMatch = null;
+            user.CurrentUserForMatchMessageId = null;
+
+            return;
+        }
+
+        List<User> foundUsers;
+        User foundUser;
+        do
+        {
+            foundUsers = _userMatchingService.MatchForUserByDistance(user);
+
+            if (foundUsers.Count == 0)
+            {
+                await botClient.SendTextMessageAsync(user.Id,
+                    "Users not found", cancellationToken: cancellationToken);
+
+                user.State = BotState.Register_ShowProfile;
+
+                return;
+            }
+
+            do
+            {
+                foundUser = foundUsers[user.CurrentOffset];
+
+                var userMatches = _matchesService.AllMatchedForUser(user);
+                var foundMatch = userMatches.Find(m => m.MatchFromUser == foundUser);
+                if (foundMatch != null)
+                {
+                    user.CurrentOffset++;
+                    userMatches.Remove(foundMatch);
+                }
+                else
+                {
+                    break;
+                }
+            }
+            while (user.CurrentOffset < foundUsers.Count);
+        }
+        while (user.CurrentOffset == foundUsers.Count);
+
+        user.CurrentUserForMatch = foundUser;
+        user.CurrentFoundUsersCount = foundUsers.Count;
+
+        await _context.SaveChangesAsync(cancellationToken: cancellationToken);
+
+        var album = await _userProfileService.GetUserProfileMessage(foundUser, cancellationToken, user.LanguageCode);
+
+        var messages = await botClient.SendMediaGroupAsync(user.Id, album, cancellationToken: cancellationToken);
+
+        user.CurrentUserForMatchMessageId = messages.First().MessageId;
+    }
+
+    public override async Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user, CancellationToken cancellationToken)
+    {
+        if (update.Message.Text == PROFILE_SYMBOL)
+        {
             user.State = BotState.Register_ShowProfile;
 
             return;
         }
 
-        var foundUser = foundUsers[user.CurrentOffset++];
-
-        var prob = UserMatchingService.UsersProbability(user, foundUser);
-
-        _logger.LogInformation("Prob: {prob}, Distance: {distance}",
-            prob,
-            GeoCalculator.GetDistance(user.Latitude.Value, user.Longitude.Value, foundUser.Latitude.Value,
-                foundUser.Longitude.Value, 1, DistanceUnit.Kilometers));
-
-        var replyKeyboardMarkup = GetReplyKeyboard(new[] { new string[] { "Ok" }, new string[] { "Not Ok" } });
-
-        await botClient.SendTextMessageAsync(user.Id,
-            "Loopa",
-            replyMarkup: replyKeyboardMarkup, cancellationToken: cancellationToken);
-
-        var album = await _userProfileService.GetUserProfileMessage(foundUser, cancellationToken, user.LanguageCode);
-
-        await botClient.SendMediaGroupAsync(user.Id, album, cancellationToken: cancellationToken);
-
-        // Обрабатываем последнего пользователя в серии.
-        if (user.CurrentOffset == foundUsers.Count)
+        if (update.Message.Text != LIKE_SYMBOL && update.Message.Text != DISLIKE_SYMBOL)
         {
-            user.CurrentOffset = 0;
+            return;
+        }
 
-            // Последняя серия поиска.
-            if (foundUsers.Count < UserMatchingService.USERS_BY_SEARCH)
+        if (user.CurrentUserForMatch != null)
+        {
+            var currentUserForMatchId = user.CurrentUserForMatch.Id;
+
+            var matchToUser = _userService.GetUserById(currentUserForMatchId);
+
+            var existMatch = _matchesService.GetMatchForUsersOrNull(matchToUser, user);
+
+            if (existMatch != null)
             {
-                user.SearchOffset = 0;
+                await HandleMatch(existMatch, botClient, update, cancellationToken);
             }
-            // Не последняя серия поиска.
-            else
+            else if (update.Message.Text == LIKE_SYMBOL && currentUserForMatchId >= 0)
             {
-                user.SearchOffset += UserMatchingService.USERS_BY_SEARCH;
+                Debug.Assert(user.CurrentUserForMatchMessageId != null, "user.CurrentUserForMatchMessageId != null");
+
+                _matchesService.Add(new Match
+                {
+                    MatchFromUser = user,
+                    MatchToUser = matchToUser,
+                    Time = DateTime.Now,
+                    FromUserMessageId = user.CurrentUserForMatchMessageId.Value
+                });
+
+                user.CurrentUserForMatch = null;
+
+                if (matchToUser.State == BotState.WatchProfiles && matchToUser.CurrentUserForMatch != user)
+                    await botClient.SendTextMessageAsync(currentUserForMatchId, _localizer["MatchFound"], cancellationToken: cancellationToken);
             }
+
+            // Обрабатываем последнего пользователя в серии.
+            user.CurrentOffset++;
+            if (user.CurrentOffset == user.CurrentFoundUsersCount)
+            {
+                user.CurrentOffset = 0;
+
+                // Последняя серия поиска.
+                if (user.CurrentFoundUsersCount < UserMatchingService.USERS_BY_SEARCH)
+                {
+                    user.SearchOffset = 0;
+                }
+                // Не последняя серия поиска.
+                else
+                {
+                    user.SearchOffset += UserMatchingService.USERS_BY_SEARCH;
+                }
+            }
+
+            return;
+        }
+        /*else if (update.Message.Text == DISLIKE_SYMBOL)
+        {
+            // Обрабатываем последнего пользователя в серии.
+            user.CurrentOffset++;
+            if (user.CurrentOffset == user.CurrentFoundUsersCount)
+            {
+                user.CurrentOffset = 0;
+
+                // Последняя серия поиска.
+                if (user.CurrentFoundUsersCount < UserMatchingService.USERS_BY_SEARCH)
+                {
+                    user.SearchOffset = 0;
+                }
+                // Не последняя серия поиска.
+                else
+                {
+                    user.SearchOffset += UserMatchingService.USERS_BY_SEARCH;
+                }
+            }
+
+            return;
+        }*/
+
+        var matches = _matchesService.MatchedForUser(user);
+        if (matches.Count > 0)
+        {
+            await HandleMatch(matches[0], botClient, update, cancellationToken);
+
+            return;
         }
     }
 
-    public override async Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user, CancellationToken cancellationToken)
+    private async Task HandleMatch(Match match, ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
-        
+        if (update.Message.Text == LIKE_SYMBOL)
+        {
+            const string formatString = "[{0}](https://t.me/{1})"; // "[{0}](tg://user?id={1})";
+
+            var matchFrom = await botClient.GetChatAsync(match.MatchFromUser.Id, cancellationToken: cancellationToken);
+            var matchTo = await botClient.GetChatAsync(match.MatchToUser.Id, cancellationToken: cancellationToken);
+
+            await botClient.SendTextMessageAsync(match.MatchFromUser.Id,
+                string.Format(_localizer["GoToChat"], string.Format(formatString, match.MatchToUser.Name, matchTo.Username)),
+                parseMode: ParseMode.MarkdownV2, cancellationToken: cancellationToken, replyToMessageId: match.FromUserMessageId);
+
+            await botClient.SendTextMessageAsync(match.MatchToUser.Id,
+                string.Format(_localizer["GoToChat"], string.Format(formatString, match.MatchFromUser.Name, matchFrom.Username)),
+                parseMode: ParseMode.MarkdownV2, cancellationToken: cancellationToken);
+        }
+
+        match.Handled = true;
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }

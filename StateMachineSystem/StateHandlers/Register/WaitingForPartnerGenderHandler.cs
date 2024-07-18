@@ -7,7 +7,7 @@ using User = YourMatchTgBot.Models.User;
 
 namespace YourMatchTgBot.StateMachineSystem.StateHandlers.Register;
 
-[StateHandler(BotState.Register_WaitingForPartnerGender, BotState.WatchProfiles, MessageType.Text)]
+[StateHandler(BotState.Register_WaitingForPartnerGender, BotState.PreWatchProfiles, MessageType.Text)]
 public class WaitingForPartnerGenderHandler : StateHandlerWithKeyboardMarkup
 {
     private readonly IStringLocalizer<Program> _localizer;
@@ -65,6 +65,8 @@ public class WaitingForPartnerGenderHandler : StateHandlerWithKeyboardMarkup
             return;
         }
 
+        user.CurrentOffset = 0;
+        user.SearchOffset = 0;
         ChangeState(user);
     }
 }

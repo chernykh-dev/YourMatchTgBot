@@ -9,8 +9,10 @@ namespace YourMatchTgBot.StateMachineSystem.StateHandlers;
 public abstract class StateHandlerWithKeyboardMarkup : AbstractStateHandler
 {
     private const string PIN_SYMBOL = "📍";
-    
-    // public abstract BotState NextState { get; }
+    protected const string SEARCH_SYMBOL = "\ud83d\udd0e";
+    protected const string LIKE_SYMBOL = "\u2764\ufe0f";
+    protected const string DISLIKE_SYMBOL = "\u274c";
+    protected const string PROFILE_SYMBOL = "\ud83d\udc64";
 
     protected static ReplyMarkupBase GetReplyKeyboard(IEnumerable<IEnumerable<string>> buttons,
         bool resizeKeyboardMarkup = true)
@@ -53,5 +55,10 @@ public abstract class StateHandlerWithKeyboardMarkup : AbstractStateHandler
         keyboard.ResizeKeyboard = resizeKeyboardMarkup;
 
         return keyboard;
+    }
+
+    protected static ReplyMarkupBase GetLikesReplyKeyboard(bool resizeKeyboardMarkup = true)
+    {
+        return GetReplyKeyboard(new[] { new [] { DISLIKE_SYMBOL, PROFILE_SYMBOL, LIKE_SYMBOL } }, resizeKeyboardMarkup);
     }
 }

@@ -7,8 +7,8 @@ using User = YourMatchTgBot.Models.User;
 
 namespace YourMatchTgBot.StateMachineSystem.StateHandlers.Register;
 
-[StateHandler(BotState.Register_ShowTermsOfUse, BotState.Register_WaitingForName, MessageType.Text)]
-public class ShowTermsOfUse : StateHandlerWithKeyboardMarkup
+[StateHandler(BotState.Register_ShowTermsOfUse, BotState.Register_WaitingForTgUsername, MessageType.Text)]
+public class ShowTermsOfUseHandler : StateHandlerWithKeyboardMarkup
 {
     private const string TERMS_OF_USE_FILE_ID =
         "BQACAgIAAxkBAAILTWXnD80D5AxAVQouW45utC58hlYYAALNRAACL1s4SxbNc_t5P2VoNAQ";
@@ -18,7 +18,7 @@ public class ShowTermsOfUse : StateHandlerWithKeyboardMarkup
     
     private readonly IStringLocalizer<Program> _localizer;
 
-    public ShowTermsOfUse(IStringLocalizer<Program> localizer)
+    public ShowTermsOfUseHandler(IStringLocalizer<Program> localizer)
     {
         _localizer = localizer;
     }

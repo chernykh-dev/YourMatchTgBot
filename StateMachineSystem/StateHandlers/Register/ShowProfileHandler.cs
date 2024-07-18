@@ -21,7 +21,7 @@ public class ShowProfileHandler : StateHandlerWithKeyboardMarkup
 
     public override async Task RequestToUser(ITelegramBotClient botClient, Update update, User user, CancellationToken cancellationToken)
     {
-        var replyKeyboardMarkup = GetReplyKeyboard(new[] { new string[] { _localizer["Continue"] }, new string[] { _localizer["FillProfileAgain"] } });
+        var replyKeyboardMarkup = GetReplyKeyboard(new[] { new string[] { _localizer["WatchProfiles"] }, new string[] { _localizer["FillProfileAgain"] } });
         
         await botClient.SendTextMessageAsync(user.Id,
             _localizer["ReadyProfile"],
@@ -34,7 +34,7 @@ public class ShowProfileHandler : StateHandlerWithKeyboardMarkup
 
     public override async Task ResponseFromUser(ITelegramBotClient botClient, Update update, User user, CancellationToken cancellationToken)
     {
-        if (update.Message.Text == _localizer["Continue"])
+        if (update.Message.Text == _localizer["WatchProfiles"])
         {
             ChangeState(user);
             return;

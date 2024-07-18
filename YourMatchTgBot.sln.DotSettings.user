@@ -5,6 +5,7 @@
   &lt;Assembly Path="/home/devcher/.dotnet/shared/Microsoft.NETCore.App/8.0.0/System.Linq.Expressions.dll" /&gt;
   &lt;Assembly Path="/home/devcher/.nuget/packages/telegram.bot/20.0.0-alpha.1/lib/net6.0/Telegram.Bot.dll" /&gt;
 &lt;/AssemblyExplorer&gt;</s:String>
+	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=Miscellaneous_0020Files_002FWucaxoz/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=YourMatchTgBot_002FResources_002FProgram/@EntryIndexedValue">True</s:Boolean>
 	
 	

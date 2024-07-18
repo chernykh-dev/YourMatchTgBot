@@ -1,4 +1,5 @@
 using System.Reflection;
+using Microsoft.Extensions.Localization;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -15,13 +16,17 @@ public class StateMachine
 
     private readonly ILogger<StateMachine> _logger;
     private readonly IUserService _userService;
+    private readonly ApplicationDbContext _context;
+    private readonly IStringLocalizer<Program> _localizer;
     
     private readonly Dictionary<BotState, AbstractStateHandler> _stateHandlers = new();
 
-    public StateMachine(IDependencyReflectorFactory dependencyReflectorFactory, IUserService userService, ILogger<StateMachine> logger)
+    public StateMachine(IDependencyReflectorFactory dependencyReflectorFactory, IUserService userService, ILogger<StateMachine> logger, ApplicationDbContext context, IStringLocalizer<Program> localizer)
     {
         _userService = userService;
         _logger = logger;
+        _context = context;
+        _localizer = localizer;
         foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
         {
             var handlerAttribute = type.GetCustomAttribute<StateHandlerAttribute>();
@@ -51,10 +56,34 @@ public class StateMachine
             {
                 user.State = BotState.Start;
 
+                user.SearchOffset = 0;
+                user.CurrentOffset = 0;
+
                 await botClient.SendTextMessageAsync(update.Message.Chat, "Enter /start",
                     replyMarkup: new ReplyKeyboardRemove(),
                     cancellationToken: cancellationToken);
             
+                return;
+            }
+
+            if (update.Message.Text == "/clear_search")
+            {
+                user.State = BotState.Register_ShowProfile;
+
+                user.SearchOffset = 0;
+                user.CurrentOffset = 0;
+                user.CurrentFoundUsersCount = 0;
+                user.CurrentUserForMatch = null;
+
+                _context.Matches.RemoveRange(
+                    _context.Matches.Where(m => m.MatchFromUser == user || m.MatchToUser == user).ToList());
+
+                await _context.SaveChangesAsync(cancellationToken);
+
+                await botClient.SendTextMessageAsync(update.Message.Chat, "Click keyboard button",
+                    replyMarkup: new ReplyKeyboardMarkup(new KeyboardButton(_localizer["LeaveCurrentDescription"])),
+                    cancellationToken: cancellationToken);
+
                 return;
             }
 
@@ -88,11 +117,17 @@ public class StateMachine
 
             // Не понятно, почему не работает в хэндлере.
             Program.ChangeCultureInfo(user.LanguageCode);
-            
-            if (_stateHandlers.TryGetValue(user.State, out stateHandler))
+
+            BotState userState;
+            do
             {
-                await stateHandler.RequestToUser(botClient, update, user, cancellationToken);
+                userState = user.State;
+                if (_stateHandlers.TryGetValue(user.State, out stateHandler))
+                {
+                    await stateHandler.RequestToUser(botClient, update, user, cancellationToken);
+                }
             }
+            while (userState != user.State);
         }
         catch (Exception exception)
         {
@@ -120,13 +155,14 @@ public enum BotState
     Register_WaitingForHeight,
     Register_WaitingForLocation,
     Register_WaitingForPhotos,
-    
-    Menu,
     Register_WaitingForDescription,
     Register_ShowProfile,
-    WatchProfiles,
     Register_WaitingForPartnerGender,
     Register_ShowTermsOfUse,
     Register_WaitingForSearchPreferences,
-    Register_WaitingForLanguage
+    Register_WaitingForLanguage,
+
+    PreWatchProfiles,
+    WatchProfiles,
+    Register_WaitingForTgUsername
 }
