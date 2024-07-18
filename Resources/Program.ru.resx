@@ -78,9 +78,6 @@
     <data name="🍲" xml:space="preserve">
         <value>еда</value>
     </data>
-    <data name="💻" xml:space="preserve">
-        <value>IT</value>
-    </data>
     <data name="🏔" xml:space="preserve">
         <value>путешествия</value>
     </data>
@@ -122,9 +119,6 @@
     </data>
     <data name="No" xml:space="preserve">
         <value>Нет</value>
-    </data>
-    <data name="CorrectCity" xml:space="preserve">
-        <value>{0}?</value>
     </data>
     <data name="Error_LongName" xml:space="preserve">
         <value>Длинное имя (макс. 40 символов)</value>
@@ -176,5 +170,26 @@
     </data>
     <data name="WaitingLanguage" xml:space="preserve">
         <value>На каком языке мне с тобой общаться?</value>
+    </data>
+    <data name="WatchProfiles" xml:space="preserve">
+        <value>Смотреть анкеты</value>
+    </data>
+    <data name="Liked" xml:space="preserve">
+        <value>Ты понравился пользователю:</value>
+    </data>
+    <data name="WaitingAnswerForMatch" xml:space="preserve">
+        <value>Твоя анкета понравилась пользователю:</value>
+    </data>
+    <data name="GoToChat" xml:space="preserve">
+        <value>Переходи в чат с {0} и общайся\!</value>
+    </data>
+    <data name="NeedToSetUsername" xml:space="preserve">
+        <value>Для продолжения регистрации необходимо установить имя пользователя в Telegram (Настройки -&gt; Выбрать имя пользователя). Затем нажми "Продолжить"</value>
+    </data>
+    <data name="MatchFound" xml:space="preserve">
+        <value>Закончи с анкетой и посмотри кому ты понравился!</value>
+    </data>
+    <data name="CorrectCity" xml:space="preserve">
+        <value>Это твой город: {0}?</value>
     </data>
 </root>

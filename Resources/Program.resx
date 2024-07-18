@@ -127,7 +127,7 @@
         <value>No</value>
     </data>
     <data name="CorrectCity" xml:space="preserve">
-        <value>{0}?</value>
+        <value>Is your city: {0}?</value>
     </data>
     <data name="Error_LongName" xml:space="preserve">
         <value>Long name (max 40 chars)</value>
@@ -182,5 +182,23 @@
     </data>
     <data name="WaitingLanguage" xml:space="preserve">
         <value>What language should I use to communicate with you?</value>
+    </data>
+    <data name="WatchProfiles" xml:space="preserve">
+        <value>Watch profiles</value>
+    </data>
+    <data name="Liked" xml:space="preserve">
+        <value>User liked you:</value>
+    </data>
+    <data name="WaitingAnswerForMatch" xml:space="preserve">
+        <value>User liked your profile:</value>
+    </data>
+    <data name="GoToChat" xml:space="preserve">
+        <value>Go to the chat with {0} and talk\!</value>
+    </data>
+    <data name="NeedToSetUsername" xml:space="preserve">
+        <value>To continue registration, you need to set a username in Telegram (Settings -&gt; Set Username). Then click "Continue"</value>
+    </data>
+    <data name="MatchFound" xml:space="preserve">
+        <value>Finish the profile and see who liked you!</value>
     </data>
 </root>

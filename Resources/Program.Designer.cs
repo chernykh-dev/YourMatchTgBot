@@ -290,5 +290,41 @@ namespace YourMatchTgBot.Resources {
                 return ResourceManager.GetString("WaitingLanguage", resourceCulture);
             }
         }
+        
+        internal static string WatchProfiles {
+            get {
+                return ResourceManager.GetString("WatchProfiles", resourceCulture);
+            }
+        }
+        
+        internal static string Liked {
+            get {
+                return ResourceManager.GetString("Liked", resourceCulture);
+            }
+        }
+        
+        internal static string WaitingAnswerForMatch {
+            get {
+                return ResourceManager.GetString("WaitingAnswerForMatch", resourceCulture);
+            }
+        }
+        
+        internal static string GoToChat {
+            get {
+                return ResourceManager.GetString("GoToChat", resourceCulture);
+            }
+        }
+        
+        internal static string NeedToSetUsername {
+            get {
+                return ResourceManager.GetString("NeedToSetUsername", resourceCulture);
+            }
+        }
+        
+        internal static string MatchFound {
+            get {
+                return ResourceManager.GetString("MatchFound", resourceCulture);
+            }
+        }
     }
 }
