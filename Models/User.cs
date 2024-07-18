@@ -51,4 +51,10 @@ public class User
     public int SearchOffset { get; set; } = 0;
 
     public int CurrentOffset { get; set; } = 0;
+
+    public int CurrentFoundUsersCount { get; set; } = 0;
+
+    public virtual User? CurrentUserForMatch { get; set; }
+
+    public int? CurrentUserForMatchMessageId { get; set; }
 }

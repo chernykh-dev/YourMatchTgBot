@@ -37,6 +37,7 @@ public class UserMatchingService
             // .Include(u => u.Photos)
             .AsEnumerable()
             .Where(u => u.Id != userForMatch.Id)
+            .Where(u => (u.Gender.Value & userForMatch.PartnerGender.Value) > 0 && (userForMatch.Gender.Value & u.PartnerGender.Value) > 0)
             .Select(u => new
             {
                 User = u,

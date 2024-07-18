@@ -71,6 +71,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Interest> Interests { get; set; } = null!;
 
     public DbSet<City> Cities { get; set; } = null!;
+    public DbSet<Match> Matches { get; set; } = null!;
 
     public ApplicationDbContext()
     {
